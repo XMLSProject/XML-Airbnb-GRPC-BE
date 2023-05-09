@@ -2,30 +2,26 @@ package main
 
 import (
 	"context"
-	"first_init/handler"
-	repository "first_init/repository"
-	"first_init/routehandler"
+	"first_init/config"
+	handler "first_init/handlers"
+	"first_init/proto/login"
+	repo "first_init/repository"
 	"first_init/service"
 	"fmt"
 	"log"
-	"net/http"
+	"net"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
-
-	gorillaHandlers "github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
-
-type Trainer struct {
-	Name    string
-	Surname string
-}
 
 func initDB() (*mongo.Client, context.Context) {
 
@@ -60,57 +56,47 @@ func DisconnectDB(client *mongo.Client) {
 		fmt.Println("Connection to MongoDB closed.")
 	}
 }
-func startServer(handler *handler.UserHandler, ctx context.Context) {
-	router := mux.NewRouter().StrictSlash(true)
-	routehandler.Routing(router, handler)
-	headersOk := gorillaHandlers.AllowedHeaders([]string{"Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization",
-		"accept", "origin", "Cache-Control", "X-Requested-With"})
-	originsOk := gorillaHandlers.AllowedOrigins([]string{"*"})
-	methodsOk := gorillaHandlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
-	cors := gorillaHandlers.CORS(headersOk, originsOk, methodsOk)
 
-	//Initialize the server
+func main() {
+	client, _ := initDB()
+	userRepo := &repo.UserRepository{DatabaseConnection: client}
+	userService := &service.UserService{UserRepo: userRepo}
+	loginHandler := handler.NewAuthenticationHandler(userService)
+	fmt.Print(client)
 
-	server := http.Server{
-		Addr:         ":" + "8081",
-		Handler:      cors(router),
-		IdleTimeout:  120 * time.Second,
-		ReadTimeout:  1 * time.Second,
-		WriteTimeout: 1 * time.Second,
+	cfg := config.GetConfig()
+
+	listener, err := net.Listen("tcp", cfg.Address)
+	if err != nil {
+		log.Fatalln(err)
 	}
-
-	log.Println("Server listening on port 8081")
-	//Distribute all the connections to goroutines
-	go func() {
-		err := server.ListenAndServe()
+	defer func(listener net.Listener) {
+		err := listener.Close()
 		if err != nil {
 			log.Fatal(err)
 		}
+	}(listener)
+
+	// Bootstrap gRPC server.
+	grpcServer := grpc.NewServer()
+	reflection.Register(grpcServer)
+
+	// Bootstrap gRPC service server and respond to request.
+
+	login.RegisterLoginServiceServer(grpcServer, loginHandler)
+
+	go func() {
+		if err := grpcServer.Serve(listener); err != nil {
+			log.Fatal("server error: ", err)
+		}
 	}()
 
-	sigCh := make(chan os.Signal)
-	signal.Notify(sigCh, os.Interrupt)
-	signal.Notify(sigCh, os.Kill)
+	stopCh := make(chan os.Signal)
+	signal.Notify(stopCh, syscall.SIGTERM)
 
-	sig := <-sigCh
-	log.Println("Received terminate, graceful shutdown", sig)
+	<-stopCh
 
-	//Try to shutdown gracefully
-	if server.Shutdown(ctx) != nil {
-		log.Fatal("Cannot gracefully shutdown...")
-	}
-	log.Println("Server stopped")
-}
-
-func main() {
-	client, ctx := initDB()
-	userRepo := &repository.UserRepository{DatabaseConnection: client}
-	userService := &service.UserService{UserRepo: userRepo}
-	userHandler := &handler.UserHandler{UserService: userService}
-	startServer(userHandler, ctx)
-	// Close the connection once no longer needed
-
-	//DisconnectDB(client)
+	grpcServer.Stop()
 }
 
 type PatientRepo struct {
@@ -120,7 +106,7 @@ type PatientRepo struct {
 
 // NoSQL: Constructor which reads db configuration from environment
 func New(ctx context.Context, logger *log.Logger) (*PatientRepo, error) {
-	dburi := os.Getenv("MONGO_DB_URI")
+	dburi := "mongodb://localhost:27017/"
 
 	client, err := mongo.NewClient(options.Client().ApplyURI(dburi))
 	if err != nil {

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option go_package = "proto/login";
+
+service LoginService {
+  rpc GreetFromLogin(Request) returns (Response) {}
+  rpc GreetFromLoginTest(Request) returns (Response) {}
+}
+
+message Request {
+  string name = 1;
+}
+
+message Response {
+  string greeting = 2;
+}

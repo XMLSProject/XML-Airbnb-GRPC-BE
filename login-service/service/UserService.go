@@ -15,7 +15,9 @@ type UserService struct {
 }
 
 func (service *UserService) FindUser(id string) (*model.User, error) {
+	fmt.Println("Uso u servis")
 	User, err := service.UserRepo.FindById(id)
+	fmt.Println("Proso servis")
 	if err != nil {
 		return nil, fmt.Errorf(fmt.Sprintf("user with id %s not found", id))
 	}

@@ -20,7 +20,9 @@ type UserRepository struct {
 func (repo *UserRepository) FindById(id string) (model.User, error) {
 	User := model.User{}
 	filter := bson.D{{Key: "name", Value: id}}
+	fmt.Println("Doso do interakcije s bazom")
 	err := repo.DatabaseConnection.Database("UserDB").Collection("users").FindOne(context.TODO(), filter).Decode(&User)
+	fmt.Println("Proso interakcije s bazom")
 	return User, err
 }
 
