@@ -13,6 +13,20 @@ services:
       GREETER_SERVICE_ADDRESS: ${GREETER_SERVICE_ADDRESS}
     networks:
       - network
+      
+  login_service:
+    image: login_service
+    container_name: login_service
+    hostname: login_service
+    build:
+      context: ./login-service/
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      LOGIN_SERVICE_ADDRESS: ${LOGIN_SERVICE_ADDRESS}
+    networks:
+      - network
+  
 
   api_gateway:
     image: api_gateway
@@ -24,9 +38,11 @@ services:
     restart: always
     environment:
       GREETER_SERVICE_ADDRESS: greeter_service:8000
+      LOGIN_SERVICE_ADDRESS: login_service:8000
       GATEWAY_ADDRESS: ${GATEWAY_ADDRESS}
     depends_on:
       - greeter_service
+      - login_service
     networks:
       - network
     ports:
@@ -50,8 +66,6 @@ services:
   #     interval: 10s
   #     timeout: 10s
   #     retries: 10
-
-      
 
 networks:
   network:

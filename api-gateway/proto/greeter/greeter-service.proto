@@ -19,6 +19,21 @@ service GreeterService {
   }
 }
 
+service LoginService {
+  rpc GreetFromLogin(Request) returns (Response) {
+    option (google.api.http) = {
+      post: "/login"
+      body: "*"
+    };
+  }
+
+  rpc GreetFromLoginTest(Request) returns (Response) {
+    option (google.api.http) = {
+      get: "/login"
+    };
+  }
+}
+
 message Request {
   string name = 1;
 }

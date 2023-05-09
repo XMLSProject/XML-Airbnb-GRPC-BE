@@ -2,11 +2,8 @@ package routehandler
 
 import (
 	"encoding/json"
-	"first_init/handler"
 	"fmt"
 	"net/http"
-
-	"github.com/gorilla/mux"
 )
 
 func home(w http.ResponseWriter, r *http.Request) {
@@ -19,12 +16,13 @@ func Cao(w http.ResponseWriter, r *http.Request) {
 	w.Write(a)
 
 }
-func Routing(router *mux.Router, handler *handler.UserHandler) {
-	router.HandleFunc("/users/{id}", handler.Get).Methods("GET")
-	router.HandleFunc("/users", handler.Register).Methods("POST", "OPTIONS")
-	router.HandleFunc("/auth", handler.Login).Methods("POST")
-	router.HandleFunc("/api", home).Methods("GET")
-	router.HandleFunc("/login", handler.Loginn).Methods("POST", "OPTIONS")
-	router.HandleFunc("/home", handler.Home).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/cao", Cao).Methods("GET", "OPTIONS")
-}
+
+// func Routing(router *mux.Router, handler *handler.UserHandler) {
+// 	router.HandleFunc("/users/{id}", handler.Get).Methods("GET")
+// 	router.HandleFunc("/users", handler.Register).Methods("POST", "OPTIONS")
+// 	router.HandleFunc("/auth", handler.Login).Methods("POST")
+// 	router.HandleFunc("/api", home).Methods("GET")
+// 	router.HandleFunc("/login", handler.Loginn).Methods("POST", "OPTIONS")
+// 	router.HandleFunc("/home", handler.Home).Methods("GET", "OPTIONS")
+// 	router.HandleFunc("/api/cao", Cao).Methods("GET", "OPTIONS")
+// }

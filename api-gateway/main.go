@@ -41,7 +41,30 @@ func main() {
 	if err != nil {
 		log.Fatalln("Failed to register gateway:", err)
 	}
+	///////////////////////////////////////////////////////
 
+	connn, errr := grpc.DialContext(
+		context.Background(),
+		cfg.LoginServiceAddress,
+		grpc.WithBlock(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+
+	if errr != nil {
+		log.Fatalln("Failed to dial serverr:", errr)
+	}
+	// Register Greeter
+	clientt := greeter.NewLoginServiceClient(connn)
+	err = greeter.RegisterLoginServiceHandlerClient(
+		context.Background(),
+		gwmux,
+		clientt,
+	)
+	if err != nil {
+		log.Fatalln("Failed to register gateway:", err)
+	}
+
+	///////////////////////////////////////////////////////
 	gwServer := &http.Server{
 		Addr:    cfg.Address,
 		Handler: gwmux,
