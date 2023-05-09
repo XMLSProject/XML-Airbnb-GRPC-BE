@@ -3,22 +3,35 @@ package handler
 import (
 	"context"
 	"first_init/proto/login"
+	"first_init/service"
 	"fmt"
 )
 
+func NewAuthenticationHandler(service *service.UserService) *LoginHandler {
+	return &LoginHandler{
+		UserService: service,
+	}
+}
+
 type LoginHandler struct {
 	login.UnimplementedLoginServiceServer
+	UserService *service.UserService
+}
+
+type UserHandler struct {
+	UserService *service.UserService
 }
 
 func (h LoginHandler) GreetFromLogin(ctx context.Context, request *login.Request) (*login.Response, error) {
+
+	fmt.Println("Uso u hendler")
+	User, _ := h.UserService.FindUser("Joca")
+	fmt.Println(User)
+	fmt.Println("Evo greske")
 	return &login.Response{
 		Greeting: fmt.Sprintf("Hihi %s!", request.Name),
 	}, nil
 }
-
-// type UserHandler struct {
-// 	UserService *service.UserService
-// }
 
 // func (handler *UserHandler) Get(writer http.ResponseWriter, req *http.Request) {
 // 	id := mux.Vars(req)["id"]

@@ -23,6 +23,7 @@ services:
       dockerfile: Dockerfile
     restart: always
     environment:
+      MONGO_DB_URI: mongodb://root:pass@mongo:27017
       LOGIN_SERVICE_ADDRESS: ${LOGIN_SERVICE_ADDRESS}
     networks:
       - network
@@ -49,23 +50,22 @@ services:
       - "8000:8000"
 
 
-   # NoSQL: MongoDB
-  # mongo:
-  #   image: mongo
-  #   restart: always
-  #   ports:
-  #     - "9000:27017"
-  #   environment:
-  #     MONGO_DB_URI: mongodb://root:pass@mongo:27017
-  #     MONGO_INITDB_ROOT_USERNAME: root
-  #     MONGO_INITDB_ROOT_PASSWORD: pass
-  #     MONGO_INITDB_DATABASE: mongoDemo
-  #   # Docker healtcheck - checks if database is "alive"
-  #   healthcheck:
-  #     test: echo 'db.runCommand("ping").ok'
-  #     interval: 10s
-  #     timeout: 10s
-  #     retries: 10
+  #NoSQL: MongoDB
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - "9000:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: pass
+      MONGO_INITDB_DATABASE: mongoDemo
+    # Docker healtcheck - checks if database is "alive"
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 10s
+      retries: 10
 
 networks:
   network:
