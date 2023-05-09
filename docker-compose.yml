@@ -1,0 +1,59 @@
+version: "3.8"
+
+services:
+  greeter_service:
+    image: greeter_service
+    container_name: greeter_service
+    hostname: greeter_service
+    build:
+      context: ./greeter-service/
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      GREETER_SERVICE_ADDRESS: ${GREETER_SERVICE_ADDRESS}
+    networks:
+      - network
+
+  api_gateway:
+    image: api_gateway
+    container_name: api_gateway
+    hostname: api_gateway
+    build:
+      context: ./api-gateway/
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      GREETER_SERVICE_ADDRESS: greeter_service:8000
+      GATEWAY_ADDRESS: ${GATEWAY_ADDRESS}
+    depends_on:
+      - greeter_service
+    networks:
+      - network
+    ports:
+      - "8000:8000"
+
+
+   # NoSQL: MongoDB
+  # mongo:
+  #   image: mongo
+  #   restart: always
+  #   ports:
+  #     - "9000:27017"
+  #   environment:
+  #     MONGO_DB_URI: mongodb://root:pass@mongo:27017
+  #     MONGO_INITDB_ROOT_USERNAME: root
+  #     MONGO_INITDB_ROOT_PASSWORD: pass
+  #     MONGO_INITDB_DATABASE: mongoDemo
+  #   # Docker healtcheck - checks if database is "alive"
+  #   healthcheck:
+  #     test: echo 'db.runCommand("ping").ok'
+  #     interval: 10s
+  #     timeout: 10s
+  #     retries: 10
+
+      
+
+networks:
+  network:
+    driver: bridge
+
