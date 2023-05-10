@@ -29,13 +29,6 @@ type UserHandler struct {
 }
 
 func (h LoginHandler) GreetFromLogin(ctx context.Context, request *login.Request) (*login.Response, error) {
-
-	fmt.Println("Uso u hendler")
-	var Userr = model.User{}
-	Userr.Name = "Joca"
-	err := h.UserService.Create(&Userr)
-	fmt.Println(err)
-	fmt.Println("Evo greske")
 	return &login.Response{
 		Greeting: fmt.Sprintf("Hihi %s!", request.Name),
 	}, nil
@@ -54,6 +47,31 @@ func (h LoginHandler) CreateUser(ctx context.Context, request *login.CreateUserR
 	fmt.Println("Iznad je request")
 	return &login.CreateUserResponse{
 		Reg: &login.User{},
+	}, nil
+}
+func (h LoginHandler) UpdateUser(ctx context.Context, request *login.UpdateRequest) (*login.UpdateResponse, error) {
+	//var User *model.User
+	var User = model.User{}
+	User.Name = request.GetReg().Name
+	User.Surname = request.GetReg().Surname
+	User.Email = request.GetReg().Email
+	User.Username = request.GetReg().Username
+	User.Password = request.GetReg().Password
+	User.Role = "User"
+	// print the JSON string
+	h.UserService.UpdateUser(&User)
+	fmt.Println("Iznad je request")
+	return &login.UpdateResponse{
+		Reg: &login.UpdateInfo{},
+	}, nil
+}
+func (h LoginHandler) DeleteUser(ctx context.Context, request *login.DeleteRequest) (*login.DeleteResponse, error) {
+	//var User *model.User
+	// print the JSON string
+	h.UserService.DeleteUser(request.Dlt)
+	fmt.Println("Iznad je request")
+	return &login.DeleteResponse{
+		Dlt: "Deleted",
 	}, nil
 }
 

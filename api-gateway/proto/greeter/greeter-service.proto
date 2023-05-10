@@ -46,6 +46,39 @@ service LoginService {
         body: "logg"
       };
    }
+   rpc UpdateUser(UpdateRequest) returns (UpdateResponse)
+   {
+      option (google.api.http) = {
+        post: "/updateUser"
+        body: "upd"
+      };
+   }
+   rpc DeleteUser(DeleteRequest) returns (DeleteResponse)
+   {
+      option (google.api.http) = {
+        post: "/deleteUser"
+        body: "dlt"
+      };
+   }
+}
+message DeleteRequest {
+  string dlt = 3;
+}
+message DeleteResponse {
+  string dlt = 4;
+}
+message UpdateRequest {
+  UpdateInfo upd = 3;
+}
+message UpdateResponse {
+  UpdateInfo upd = 4;
+}
+message UpdateInfo {
+        string name = 2;
+        string surname = 3;
+        string username = 4;
+        string password = 5;
+        string email = 6;
 }
 message LoginRequest {
   LoginInfo logg = 3;

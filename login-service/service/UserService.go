@@ -30,6 +30,26 @@ func (service *UserService) FindUserForLogin(username string, password string) (
 	}
 	return User, nil
 }
+func (service *UserService) UpdateUser(user *model.User) error {
+	err := service.UserRepo.UpdateUser(user)
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Successfully updated")
+	return nil
+}
+func (service *UserService) DeleteUser(email string) error {
+	err := service.UserRepo.DeleteUser(email)
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Successfully updated")
+	return nil
+}
 func registerValidation(User *model.User) bool {
 	match1, _ := regexp.MatchString("[A-Z]{1}[a-z]+", User.Name)
 	match2, _ := regexp.MatchString("[A-Z]{1}[a-z]+", User.Surname)

@@ -7,6 +7,29 @@ service LoginService {
   rpc GreetFromLoginTest(Request) returns (Response) {}
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse){}
   rpc Login(LoginRequest) returns (LoginResponse){}
+  rpc UpdateUser(UpdateRequest) returns (UpdateResponse){}
+  rpc DeleteUser(DeleteRequest) returns (DeleteResponse){}
+}
+
+message DeleteRequest {
+  string dlt = 3;
+}
+message DeleteResponse {
+  string dlt = 4;
+}
+
+message UpdateRequest {
+  UpdateInfo reg = 3;
+}
+message UpdateResponse {
+  UpdateInfo reg = 4;
+}
+message UpdateInfo {
+        string name = 2;
+        string surname = 3;
+        string username = 4;
+        string password = 5;
+        string email = 6;
 }
 
 message LoginRequest {

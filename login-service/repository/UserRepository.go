@@ -65,6 +65,36 @@ func (repo *UserRepository) CreateUser(User *model.User) error {
 	fmt.Println("Sucessfully created")
 	return nil
 }
+func (repo *UserRepository) UpdateUser(user *model.User) error {
+	_, err := repo.DatabaseConnection.Database("UserDB").Collection("users").UpdateOne(
+		context.TODO(),
+		bson.M{"email": user.Email},
+		bson.D{{Key: "$set", Value: bson.D{
+			{Key: "name", Value: user.Name},
+			{Key: "surname", Value: user.Surname},
+			{Key: "username", Value: user.Username},
+			{Key: "password", Value: user.Password},
+		}}},
+	)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Successfully updated")
+	return nil
+}
+func (repo *UserRepository) DeleteUser(email string) error {
+	_, err := repo.DatabaseConnection.Database("UserDB").Collection("users").DeleteOne(
+		context.TODO(),
+		bson.M{"email": email},
+	)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Successfully deleted")
+	return nil
+}
 func (repo *UserRepository) FindUsername(username string, User *model.User, email string) bool {
 	filter := bson.D{{Key: "username", Value: username}}
 	err := repo.DatabaseConnection.Database("UserDB").Collection("users").FindOne(context.TODO(), filter).Decode(&User)
