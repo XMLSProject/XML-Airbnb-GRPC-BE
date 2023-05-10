@@ -32,6 +32,23 @@ services:
       - login_db
     networks:
       - network
+
+  accommodation_service:
+    image: accommodation_service
+    container_name: accommodation_service
+    hostname: accommodation_service
+    build:
+      context: ./accommodation-service/
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      ACCOMMODATION_DB_HOST: ${ACCOMMODATION_DB_HOST}
+      ACCOMMODATION_DB_PORT: ${ACCOMMODATION_DB_PORT}
+      ACCOMMODATION_SERVICE_PORT: ${ACCOMMODATION_SERVICE_PORT}
+    depends_on:
+      - accommodation_db
+    networks:
+      - network
   
 
   api_gateway:
@@ -45,10 +62,12 @@ services:
     environment:
       GREETER_SERVICE_ADDRESS: greeter_service:8000
       LOGIN_SERVICE_ADDRESS: login_service:8000
+      ACCOMMODATION_SERVICE_ADDRESS: accommodation_service:8000
       GATEWAY_ADDRESS: ${GATEWAY_ADDRESS}
     depends_on:
       - greeter_service
       - login_service
+      - accommodation_service
     networks:
       - network
     ports:
@@ -60,6 +79,15 @@ services:
     restart: on-failure
     ports:
       - "9000:27017"
+    networks:
+      - network
+
+  accommodation_db:
+    image: mongo
+    container_name: accommodation_db
+    restart: on-failure
+    ports:
+      - "9001:27017"
     networks:
       - network
 
