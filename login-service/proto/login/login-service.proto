@@ -5,6 +5,7 @@ option go_package = "proto/login";
 service LoginService {
   rpc GreetFromLogin(Request) returns (Response) {}
   rpc GreetFromLoginTest(Request) returns (Response) {}
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse){}
 }
 
 message Request {
@@ -13,4 +14,19 @@ message Request {
 
 message Response {
   string greeting = 2;
+}
+
+message CreateUserRequest {
+  User reg = 3;
+}
+message CreateUserResponse {
+  User reg = 4;
+}
+message User {
+        string id = 1;
+        string name = 2;
+        string surname = 3;
+        string username = 4;
+        string password = 5;
+        string email = 6;
 }

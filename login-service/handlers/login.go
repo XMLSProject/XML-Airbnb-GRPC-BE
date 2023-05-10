@@ -35,6 +35,21 @@ func (h LoginHandler) GreetFromLogin(ctx context.Context, request *login.Request
 		Greeting: fmt.Sprintf("Hihi %s!", request.Name),
 	}, nil
 }
+func (h LoginHandler) CreateUser(ctx context.Context, request *login.CreateUserRequest) (*login.CreateUserResponse, error) {
+	//var User *model.User
+	var User = model.User{}
+	User.Name = request.GetReg().Name
+	User.Surname = request.GetReg().Surname
+	User.Email = request.GetReg().Email
+	User.Username = request.GetReg().Username
+	User.Password = request.GetReg().Password
+	// print the JSON string
+	h.UserService.Create(&User)
+	fmt.Println("Iznad je request")
+	return &login.CreateUserResponse{
+		Reg: &login.User{},
+	}, nil
+}
 
 // func (handler *UserHandler) Get(writer http.ResponseWriter, req *http.Request) {
 // 	id := mux.Vars(req)["id"]
