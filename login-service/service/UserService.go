@@ -3,7 +3,6 @@ package service
 import (
 	"crypto/sha1"
 	"encoding/hex"
-	"errors"
 	"first_init/model"
 	repo "first_init/repository"
 	"fmt"
@@ -52,12 +51,12 @@ func shaString(s string) string {
 }
 
 func (service *UserService) Create(User *model.User) error {
-	regexError := registerValidation(User)
-	User.Password = shaString(User.Password)
-	if !regexError {
-		fmt.Println("Regex error")
-		return errors.New("regexError")
-	}
+	// regexError := registerValidation(User)
+	// User.Password = shaString(User.Password)
+	// if !regexError {
+	// 	fmt.Println("Regex error")
+	// 	return errors.New("regexError")
+	// }
 	err := service.UserRepo.CreateUser(User)
 	if err != nil {
 		return err
