@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option go_package = "proto/accommodation";
+
+service AccommodationService {
+  rpc GreetFromAccommodation(Request) returns (Response) {}
+}
+
+message Request {
+  string name = 1;
+}
+
+message Response {
+  string greeting = 2;
+}

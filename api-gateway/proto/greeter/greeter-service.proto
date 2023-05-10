@@ -34,6 +34,15 @@ service LoginService {
   }
 }
 
+service AccommodationService {
+  rpc GreetFromAccommodation(Request) returns (Response) {
+    option (google.api.http) = {
+      post: "/accommodation"
+      body: "*"
+    };
+  }
+}
+
 message Request {
   string name = 1;
 }
