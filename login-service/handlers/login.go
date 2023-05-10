@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"first_init/model"
 	"first_init/proto/login"
 	"first_init/service"
 	"fmt"
@@ -25,8 +26,10 @@ type UserHandler struct {
 func (h LoginHandler) GreetFromLogin(ctx context.Context, request *login.Request) (*login.Response, error) {
 
 	fmt.Println("Uso u hendler")
-	User, _ := h.UserService.FindUser("Joca")
-	fmt.Println(User)
+	var Userr = model.User{}
+	Userr.Name = "Joca"
+	err := h.UserService.Create(&Userr)
+	fmt.Println(err)
 	fmt.Println("Evo greske")
 	return &login.Response{
 		Greeting: fmt.Sprintf("Hihi %s!", request.Name),

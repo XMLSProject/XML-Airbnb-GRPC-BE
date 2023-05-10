@@ -10,7 +10,6 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type UserRepository struct {
@@ -45,24 +44,24 @@ func (repo *UserRepository) CreateUser(User *model.User) error {
 	if err != nil {
 		return err
 	}
-	_, errr := repo.DatabaseConnection.Database("UserDB").Collection("users").Indexes().CreateOne(context.Background(),
-		mongo.IndexModel{
-			Keys:    bson.D{{Key: "email", Value: 1}},
-			Options: options.Index().SetUnique(true),
-		},
-	)
-	_, errrr := repo.DatabaseConnection.Database("UserDB").Collection("users").Indexes().CreateOne(context.Background(),
-		mongo.IndexModel{
-			Keys:    bson.D{{Key: "username", Value: 1}},
-			Options: options.Index().SetUnique(true),
-		},
-	)
-	if errr != nil {
-		return errors.New("email already exist")
-	}
-	if errrr != nil {
-		return errors.New("username already exist")
-	}
+	// _, errr := repo.DatabaseConnection.Database("UserDB").Collection("users").Indexes().CreateOne(context.Background(),
+	// 	mongo.IndexModel{
+	// 		Keys:    bson.D{{Key: "email", Value: 1}},
+	// 		Options: options.Index().SetUnique(true),
+	// 	},
+	// )
+	// _, errrr := repo.DatabaseConnection.Database("UserDB").Collection("users").Indexes().CreateOne(context.Background(),
+	// 	mongo.IndexModel{
+	// 		Keys:    bson.D{{Key: "username", Value: 1}},
+	// 		Options: options.Index().SetUnique(true),
+	// 	},
+	// )
+	// if errr != nil {
+	// 	return errors.New("email already exist")
+	// }
+	// if errrr != nil {
+	// 	return errors.New("username already exist")
+	// }
 	fmt.Println("Sucessfully created")
 	return nil
 }
