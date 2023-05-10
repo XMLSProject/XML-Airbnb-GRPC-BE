@@ -148,6 +148,10 @@ var GreeterService_ServiceDesc = grpc.ServiceDesc{
 const (
 	LoginService_GreetFromLogin_FullMethodName     = "/LoginService/GreetFromLogin"
 	LoginService_GreetFromLoginTest_FullMethodName = "/LoginService/GreetFromLoginTest"
+	LoginService_CreateUser_FullMethodName         = "/LoginService/CreateUser"
+	LoginService_Login_FullMethodName              = "/LoginService/Login"
+	LoginService_UpdateUser_FullMethodName         = "/LoginService/UpdateUser"
+	LoginService_DeleteUser_FullMethodName         = "/LoginService/DeleteUser"
 )
 
 // LoginServiceClient is the client API for LoginService service.
@@ -190,7 +194,7 @@ func (c *loginServiceClient) GreetFromLoginTest(ctx context.Context, in *Request
 
 func (c *loginServiceClient) CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error) {
 	out := new(CreateUserResponse)
-	err := c.cc.Invoke(ctx, "/LoginService/CreateUser", in, out, opts...)
+	err := c.cc.Invoke(ctx, LoginService_CreateUser_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -199,7 +203,7 @@ func (c *loginServiceClient) CreateUser(ctx context.Context, in *CreateUserReque
 
 func (c *loginServiceClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
 	out := new(LoginResponse)
-	err := c.cc.Invoke(ctx, "/LoginService/Login", in, out, opts...)
+	err := c.cc.Invoke(ctx, LoginService_Login_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -208,7 +212,7 @@ func (c *loginServiceClient) Login(ctx context.Context, in *LoginRequest, opts .
 
 func (c *loginServiceClient) UpdateUser(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateResponse, error) {
 	out := new(UpdateResponse)
-	err := c.cc.Invoke(ctx, "/LoginService/UpdateUser", in, out, opts...)
+	err := c.cc.Invoke(ctx, LoginService_UpdateUser_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -217,7 +221,7 @@ func (c *loginServiceClient) UpdateUser(ctx context.Context, in *UpdateRequest, 
 
 func (c *loginServiceClient) DeleteUser(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error) {
 	out := new(DeleteResponse)
-	err := c.cc.Invoke(ctx, "/LoginService/DeleteUser", in, out, opts...)
+	err := c.cc.Invoke(ctx, LoginService_DeleteUser_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -318,7 +322,7 @@ func _LoginService_CreateUser_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/LoginService/CreateUser",
+		FullMethod: LoginService_CreateUser_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(LoginServiceServer).CreateUser(ctx, req.(*CreateUserRequest))
@@ -336,7 +340,7 @@ func _LoginService_Login_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/LoginService/Login",
+		FullMethod: LoginService_Login_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(LoginServiceServer).Login(ctx, req.(*LoginRequest))
@@ -354,7 +358,7 @@ func _LoginService_UpdateUser_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/LoginService/UpdateUser",
+		FullMethod: LoginService_UpdateUser_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(LoginServiceServer).UpdateUser(ctx, req.(*UpdateRequest))
@@ -372,7 +376,7 @@ func _LoginService_DeleteUser_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/LoginService/DeleteUser",
+		FullMethod: LoginService_DeleteUser_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(LoginServiceServer).DeleteUser(ctx, req.(*DeleteRequest))
