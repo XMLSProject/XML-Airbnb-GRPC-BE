@@ -6,6 +6,10 @@ import (
 	"first_init/proto/login"
 	"first_init/service"
 	"fmt"
+	"net/http"
+	"time"
+
+	"github.com/dgrijalva/jwt-go"
 )
 
 func NewAuthenticationHandler(service *service.UserService) *LoginHandler {
@@ -17,6 +21,7 @@ func NewAuthenticationHandler(service *service.UserService) *LoginHandler {
 type LoginHandler struct {
 	login.UnimplementedLoginServiceServer
 	UserService *service.UserService
+	writer      http.ResponseWriter
 }
 
 type UserHandler struct {
@@ -24,15 +29,80 @@ type UserHandler struct {
 }
 
 func (h LoginHandler) GreetFromLogin(ctx context.Context, request *login.Request) (*login.Response, error) {
-
-	fmt.Println("Uso u hendler")
-	var Userr = model.User{}
-	Userr.Name = "Joca"
-	err := h.UserService.Create(&Userr)
-	fmt.Println(err)
-	fmt.Println("Evo greske")
 	return &login.Response{
 		Greeting: fmt.Sprintf("Hihi %s!", request.Name),
+	}, nil
+}
+func (h LoginHandler) CreateUser(ctx context.Context, request *login.CreateUserRequest) (*login.CreateUserResponse, error) {
+	//var User *model.User
+	var User = model.User{}
+	User.Name = request.GetReg().Name
+	User.Surname = request.GetReg().Surname
+	User.Email = request.GetReg().Email
+	User.Username = request.GetReg().Username
+	User.Password = request.GetReg().Password
+	User.Role = "User"
+	// print the JSON string
+	h.UserService.Create(&User)
+	fmt.Println("Iznad je request")
+	return &login.CreateUserResponse{
+		Reg: &login.User{},
+	}, nil
+}
+func (h LoginHandler) UpdateUser(ctx context.Context, request *login.UpdateRequest) (*login.UpdateResponse, error) {
+	//var User *model.User
+	var User = model.User{}
+	User.Name = request.GetReg().Name
+	User.Surname = request.GetReg().Surname
+	User.Email = request.GetReg().Email
+	User.Username = request.GetReg().Username
+	User.Password = request.GetReg().Password
+	User.Role = "User"
+	// print the JSON string
+	h.UserService.UpdateUser(&User)
+	fmt.Println("Iznad je request")
+	return &login.UpdateResponse{
+		Reg: &login.UpdateInfo{},
+	}, nil
+}
+func (h LoginHandler) DeleteUser(ctx context.Context, request *login.DeleteRequest) (*login.DeleteResponse, error) {
+	//var User *model.User
+	// print the JSON string
+	h.UserService.DeleteUser(request.Dlt)
+	fmt.Println("Iznad je request")
+	return &login.DeleteResponse{
+		Dlt: "Deleted",
+	}, nil
+}
+
+func (h LoginHandler) Login(ctx context.Context, request *login.LoginRequest) (*login.LoginResponse, error) {
+	//var User *model.User
+	var User = model.User{}
+	fmt.Println(User)
+	tokenString := ""
+	Userr, er := h.UserService.FindUserForLogin(request.Logg.Username, request.Logg.Password)
+	if er != nil {
+		fmt.Sprintf("Error")
+	}
+	fmt.Println(Userr)
+	expirationTime := time.Now().Add(time.Minute * 5)
+
+	claims := &Claims{
+		Username: request.Logg.Username,
+		Role:     Userr.Role,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expirationTime.Unix(),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString(jwtKey)
+
+	if err != nil {
+		fmt.Sprintf("Error")
+	}
+
+	return &login.LoginResponse{
+		Token: tokenString,
 	}, nil
 }
 
@@ -82,18 +152,18 @@ func (h LoginHandler) GreetFromLogin(ctx context.Context, request *login.Request
 
 // }
 
-// var jwtKey = []byte("secret_key")
+var jwtKey = []byte("secret_key")
 
-// type Credentials struct {
-// 	Username string `json:"username"`
-// 	Password string `json:"password"`
-// }
+type Credentials struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
 
-// type Claims struct {
-// 	Username string `json:"username"`
-// 	Role     string `json:"role"`
-// 	jwt.StandardClaims
-// }
+type Claims struct {
+	Username string `json:"username"`
+	Role     string `json:"role"`
+	jwt.StandardClaims
+}
 
 // func (handler *UserHandler) Loginn(w http.ResponseWriter, r *http.Request) {
 // 	var credentials *Credentials
