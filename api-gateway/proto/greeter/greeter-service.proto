@@ -39,6 +39,23 @@ service LoginService {
         body: "reg"
       };
    }
+   rpc Login(LoginRequest) returns (LoginResponse)
+   {
+      option (google.api.http) = {
+        post: "/loginInfo"
+        body: "logg"
+      };
+   }
+}
+message LoginRequest {
+  LoginInfo logg = 3;
+}
+message LoginResponse {
+  string token = 4;
+}
+message LoginInfo {
+        string username = 3;
+        string password = 4;
 }
 message CreateUserRequest {
   User reg = 3;

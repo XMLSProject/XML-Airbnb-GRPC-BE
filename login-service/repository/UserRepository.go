@@ -81,7 +81,7 @@ func (repo *UserRepository) FindUsername(username string, User *model.User, emai
 }
 func (repo *UserRepository) FindUser(username string, password string) (*model.User, error) {
 	var User model.User
-	filter := bson.D{{Key: "username", Value: string(username)}, {Key: "password", Value: shaString(password)}}
+	filter := bson.D{{Key: "username", Value: string(username)}, {Key: "password", Value: string(password)}}
 	err := repo.DatabaseConnection.Database("UserDB").Collection("users").FindOne(context.TODO(), filter).Decode(&User)
 	fmt.Println(User.Username + " " + User.Password)
 	if err != nil {

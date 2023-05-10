@@ -6,6 +6,18 @@ service LoginService {
   rpc GreetFromLogin(Request) returns (Response) {}
   rpc GreetFromLoginTest(Request) returns (Response) {}
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse){}
+  rpc Login(LoginRequest) returns (LoginResponse){}
+}
+
+message LoginRequest {
+  LoginInfo logg = 3;
+}
+message LoginResponse {
+  string token = 4;
+}
+message LoginInfo {
+        string username = 3;
+        string password = 4;
 }
 
 message Request {

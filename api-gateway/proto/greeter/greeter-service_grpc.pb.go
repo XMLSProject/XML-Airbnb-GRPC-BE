@@ -147,6 +147,7 @@ type LoginServiceClient interface {
 	GreetFromLogin(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
 	GreetFromLoginTest(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
+	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 }
 
 type loginServiceClient struct {
@@ -184,6 +185,15 @@ func (c *loginServiceClient) CreateUser(ctx context.Context, in *CreateUserReque
 	return out, nil
 }
 
+func (c *loginServiceClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
+	out := new(LoginResponse)
+	err := c.cc.Invoke(ctx, "/LoginService/Login", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // LoginServiceServer is the server API for LoginService service.
 // All implementations must embed UnimplementedLoginServiceServer
 // for forward compatibility
@@ -191,6 +201,7 @@ type LoginServiceServer interface {
 	GreetFromLogin(context.Context, *Request) (*Response, error)
 	GreetFromLoginTest(context.Context, *Request) (*Response, error)
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
+	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	mustEmbedUnimplementedLoginServiceServer()
 }
 
@@ -206,6 +217,9 @@ func (UnimplementedLoginServiceServer) GreetFromLoginTest(context.Context, *Requ
 }
 func (UnimplementedLoginServiceServer) CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
+}
+func (UnimplementedLoginServiceServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
 func (UnimplementedLoginServiceServer) mustEmbedUnimplementedLoginServiceServer() {}
 
@@ -274,6 +288,24 @@ func _LoginService_CreateUser_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _LoginService_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LoginServiceServer).Login(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/LoginService/Login",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LoginServiceServer).Login(ctx, req.(*LoginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // LoginService_ServiceDesc is the grpc.ServiceDesc for LoginService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -292,6 +324,10 @@ var LoginService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateUser",
 			Handler:    _LoginService_CreateUser_Handler,
+		},
+		{
+			MethodName: "Login",
+			Handler:    _LoginService_Login_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
