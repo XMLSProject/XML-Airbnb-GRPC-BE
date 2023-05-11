@@ -82,7 +82,7 @@ func (h LoginHandler) Login(ctx context.Context, request *login.LoginRequest) (*
 	tokenString := ""
 	Userr, er := h.UserService.FindUserForLogin(request.Logg.Username, request.Logg.Password)
 	if er != nil {
-		fmt.Sprintf("Error")
+		//fmt.Sprintf("Error")
 	}
 	fmt.Println(Userr)
 	expirationTime := time.Now().Add(time.Minute * 5)
@@ -98,7 +98,7 @@ func (h LoginHandler) Login(ctx context.Context, request *login.LoginRequest) (*
 	tokenString, err := token.SignedString(jwtKey)
 
 	if err != nil {
-		fmt.Sprintf("Error")
+		//fmt.Sprintf("Error")
 	}
 
 	return &login.LoginResponse{
