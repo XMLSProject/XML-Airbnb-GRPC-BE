@@ -33,8 +33,11 @@ func shaString(s string) string {
 
 func (repo *AccommodationRepository) CreateAccommodation(Accommodation *model.Accommodation) error {
 	Accommodation.BeforeCreate(repo.DatabaseConnection)
-	_, err := repo.DatabaseConnection.Database("AccommodationDB").Collection("accommodations").InsertOne(context.TODO(), &Accommodation)
+	fmt.Println("Pravim acco u repository: " + Accommodation.Name)
+	_, err := repo.DatabaseConnection.Database("AccommodationsDB").Collection("accommodations").InsertOne(context.TODO(), &Accommodation)
 	if err != nil {
+		fmt.Println("Greska u pravljenju u repository")
+		fmt.Println(err.Error())
 		return err
 	}
 	fmt.Println("Sucessfully created")

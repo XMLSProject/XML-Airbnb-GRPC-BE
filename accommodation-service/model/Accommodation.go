@@ -13,6 +13,7 @@ type Accommodation struct {
 	Photos    []string  `json:"photos,omitempty"`
 	MinGuests int       `json:"minGuests,omitempty"`
 	MaxGuests int       `json:"maxGuests,omitempty"`
+	Creator   string    `json:"creator,omitempty"`
 }
 
 func (Accommodation *Accommodation) BeforeCreate(*mongo.Client) error {

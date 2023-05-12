@@ -30,9 +30,10 @@ func shaString(s string) string {
 }
 
 func (service *AccommodationService) Create(Accommodation *model.Accommodation) error {
-
+	fmt.Println("Pravim acco u servisu: " + Accommodation.Name)
 	err := service.AccommodationRepo.CreateAccommodation(Accommodation)
 	if err != nil {
+		fmt.Println("GRESKA U PRAVLJENJU U SERVISU")
 		return err
 	}
 	return nil
