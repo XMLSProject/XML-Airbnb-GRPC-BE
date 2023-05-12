@@ -28,3 +28,13 @@ func shaString(s string) string {
 	sha1_hash := hex.EncodeToString(h.Sum(nil))
 	return sha1_hash
 }
+
+func (service *AccommodationService) Create(Accommodation *model.Accommodation) error {
+	fmt.Println("Pravim acco u servisu: " + Accommodation.Name)
+	err := service.AccommodationRepo.CreateAccommodation(Accommodation)
+	if err != nil {
+		fmt.Println("GRESKA U PRAVLJENJU U SERVISU")
+		return err
+	}
+	return nil
+}
