@@ -30,5 +30,19 @@ func (h AccommodationHandler) GreetFromAccommodation(ctx context.Context, reques
 	return &accommodation.Response{
 		Greeting: fmt.Sprintf("Hihi from accommodation!"),
 	}, nil
+}
 
+func (h AccommodationHandler) CreateAccommodation(ctx context.Context, request *accommodation.CreateAccommodationRequest) (*accommodation.CreateAccommodationResponse, error) {
+	var Accommodation = model.Accommodation{}
+	Accommodation.Name = request.GetReg().Name
+	Accommodation.Location = request.GetReg().Location
+	Accommodation.Benefits = request.GetReg().Benefits
+	Accommodation.Photos = request.GetReg().Photos
+	Accommodation.MinGuests = int(request.GetReg().MinGuests)
+	Accommodation.MaxGuests = int(request.GetReg().MaxGuests)
+
+	h.AccommodationService.Create(&Accommodation)
+	return &accommodation.CreateAccommodationResponse{
+		Reg: &accommodation.Accommodation{},
+	}, nil
 }

@@ -112,6 +112,30 @@ service AccommodationService {
       body: "*"
     };
   }
+  rpc CreateAccommodation(CreateAccommodationRequest) returns (CreateAccommodationResponse) {
+    option (google.api.http) = {
+        post: "/createAcco"
+        body: "reg"
+      };
+  }
+}
+
+message CreateAccommodationRequest {
+  Accommodation reg = 1;
+} 
+
+message CreateAccommodationResponse {
+  Accommodation reg = 1;
+}
+
+message Accommodation {
+  string id = 1;
+  string name = 2;
+  string location = 3;
+  string benefits = 4;
+  repeated string photos = 5;
+  int32 minGuests = 6;
+  int32 maxGuests = 7;
 }
 
 message Request {

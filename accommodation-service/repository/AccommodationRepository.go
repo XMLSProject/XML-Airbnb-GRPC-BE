@@ -30,3 +30,13 @@ func shaString(s string) string {
 	sha1_hash := hex.EncodeToString(h.Sum(nil))
 	return sha1_hash
 }
+
+func (repo *AccommodationRepository) CreateAccommodation(Accommodation *model.Accommodation) error {
+	Accommodation.BeforeCreate(repo.DatabaseConnection)
+	_, err := repo.DatabaseConnection.Database("AccommodationDB").Collection("accommodations").InsertOne(context.TODO(), &Accommodation)
+	if err != nil {
+		return err
+	}
+	fmt.Println("Sucessfully created")
+	return nil
+}
