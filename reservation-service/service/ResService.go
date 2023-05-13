@@ -27,3 +27,13 @@ func (service *ResService) DeleteReservation(id string) error {
 	fmt.Println("Successfully deleted")
 	return nil
 }
+func (service *ResService) AcceptReservation(id string) error {
+	err := service.ResRepo.AcceptReservation(id)
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Successfully updated")
+	return nil
+}

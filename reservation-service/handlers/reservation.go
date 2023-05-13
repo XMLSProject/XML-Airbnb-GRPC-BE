@@ -46,3 +46,10 @@ func (h ReservationHandler) DeleteReservation(ctx context.Context, request *rese
 		Delres: "Deleted",
 	}, nil
 }
+func (h ReservationHandler) AcceptReservation(ctx context.Context, request *reservation.DeleteRequest) (*reservation.DeleteResponse, error) {
+	fmt.Println(request.Dlt + " acce")
+	h.ResService.AcceptReservation(request.Dlt)
+	return &reservation.DeleteResponse{
+		Dlt: "Updated",
+	}, nil
+}

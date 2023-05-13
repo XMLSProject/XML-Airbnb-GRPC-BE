@@ -6,13 +6,28 @@ service ReservationService {
   rpc GreetFromReservation(Request) returns (Response) {}
   rpc Reserve(RequestForReserve) returns (ResponseForReserve) {}
   rpc DeleteReservation(RequestDeleteReservation) returns (ResponseDeleteReservation) {}
+  rpc AcceptReservation(DeleteRequest) returns (DeleteResponse) {}
 
+}
+message DeleteRequest {
+  string dlt = 3;
+}
+
+message DeleteResponse {
+  string dlt = 4;
 }
 message RequestDeleteReservation {
   string delres = 3;
 }
 message ResponseDeleteReservation {
   string delres = 4;
+}
+message RequestAccept {
+  string acce = 3;
+}
+
+message ResponseAccept {
+  string acce = 4;
 }
 
 message Request {

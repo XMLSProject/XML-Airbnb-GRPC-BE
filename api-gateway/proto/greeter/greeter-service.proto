@@ -38,6 +38,12 @@ service ReservationService {
       body: "delres"
     };
   }
+  rpc AcceptReservation(DeleteRequest) returns (DeleteResponse) {
+    option (google.api.http) = {
+      post: "/acceptReservation"
+      body: "dlt"
+    };
+  }
 }
 
 service LoginService {
@@ -81,6 +87,12 @@ service LoginService {
         body: "dlt"
       };
    }
+}
+message RequestAccept {
+  string acce = 3;
+}
+message ResponseAccept {
+  string acce = 4;
 }
 message DeleteRequest {
   string dlt = 3;
