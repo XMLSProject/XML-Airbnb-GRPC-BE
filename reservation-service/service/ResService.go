@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"res_init/model"
 	repo "res_init/repository"
 )
@@ -14,5 +15,15 @@ func (service *ResService) Create(Reservation *model.Reservation) error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+func (service *ResService) DeleteReservation(id string) error {
+	err := service.ResRepo.DeleteReservation(id)
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Successfully deleted")
 	return nil
 }
