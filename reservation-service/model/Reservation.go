@@ -7,7 +7,7 @@ import (
 )
 
 type Reservation struct {
-	ID            primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	ID            primitive.ObjectID `bson:"_id,omitempty" json:"_id"`
 	FromDate      time.Time          `bson:"fromdate,omitempty" json:"fromdate,omitempty"`
 	ToDate        time.Time          `bson:"todate,omitempty" json:"todate,omitempty"`
 	GuestNumber   int                `bson:"guestnumber,omitempty" json:"guestnumber,omitempty"`
