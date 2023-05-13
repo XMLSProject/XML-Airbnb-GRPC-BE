@@ -6,6 +6,7 @@ import (
 	"first_init/proto/login"
 	"first_init/service"
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 	"time"
 
@@ -52,6 +53,7 @@ func (h LoginHandler) CreateUser(ctx context.Context, request *login.CreateUserR
 func (h LoginHandler) UpdateUser(ctx context.Context, request *login.UpdateRequest) (*login.UpdateResponse, error) {
 	//var User *model.User
 	var User = model.User{}
+	User.ID, _ = primitive.ObjectIDFromHex(request.GetReg().Id)
 	User.Name = request.GetReg().Name
 	User.Surname = request.GetReg().Surname
 	User.Email = request.GetReg().Email

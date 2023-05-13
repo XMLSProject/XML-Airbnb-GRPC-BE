@@ -25,6 +25,7 @@ message UpdateResponse {
   UpdateInfo reg = 4;
 }
 message UpdateInfo {
+        string id = 1;
         string name = 2;
         string surname = 3;
         string username = 4;
