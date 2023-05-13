@@ -6,8 +6,10 @@ import (
 	"accomm_module/service"
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 )
@@ -91,4 +93,22 @@ func userClaimFromToken(claims jwt.MapClaims) string {
 	}
 
 	return sub
+}
+
+func (h AccommodationHandler) EditAccommodation(ctx context.Context, request *accommodation.EditAccoRequest) (*accommodation.EditAccoResponse, error) {
+	var accoId = request.GetReg().AccoId
+	var availableFrom = request.GetReg().AvailableFrom
+	var availableTo = request.GetReg().AvailableTo
+	var price = request.GetReg().Price
+	var isPricePerGuest = request.GetReg().IsPricePerGuest
+
+	layout := "2006-01-02T15:04:05Z"
+	availableFromDate, _ := time.Parse(layout, availableFrom)
+	objectId, _ := primitive.ObjectIDFromHex(accoId)
+	availableToDate, _ := time.Parse(layout, availableTo)
+
+	h.AccommodationService.EditPriceAndAvailability(objectId, availableFromDate, availableToDate, price, isPricePerGuest)
+	return &accommodation.EditAccoResponse{
+		Reg: &accommodation.EditAccoInfo{},
+	}, nil
 }

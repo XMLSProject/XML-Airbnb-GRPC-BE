@@ -6,6 +6,9 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"fmt"
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type AccommodationService struct {
@@ -37,4 +40,17 @@ func (service *AccommodationService) Create(Accommodation *model.Accommodation) 
 		return err
 	}
 	return nil
+}
+
+func (service *AccommodationService) EditPriceAndAvailability(accoId primitive.ObjectID, availableFrom time.Time, availableTo time.Time, price float32, isPricePerGuest bool) error {
+	err := service.AccommodationRepo.EditPriceAndAvailability(accoId, availableFrom, availableTo, price, isPricePerGuest)
+
+	if err != nil {
+		fmt.Println("Error updating in service")
+		return err
+	}
+
+	fmt.Println("Successfully updated")
+	return nil
+
 }
