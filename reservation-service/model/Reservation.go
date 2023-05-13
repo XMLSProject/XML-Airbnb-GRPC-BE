@@ -1,21 +1,21 @@
 package model
 
 import (
-	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"time"
 )
 
 type Reservation struct {
-	ID       uuid.UUID `json:"id"`
-	Name     string    `json:"name,omitempty"`
-	Surname  string    `json:"surname,omitempty"`
-	Username string    `json:"username,omitempty"`
-	Password string    `json:"password,omitempty"`
-	Email    string    `json:"email,omitempty"`
-	Role     string    `json:"role,omitempty"`
+	ID            primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	FromDate      time.Time          `bson:"fromdate,omitempty" json:"fromdate,omitempty"`
+	ToDate        time.Time          `bson:"todate,omitempty" json:"todate,omitempty"`
+	GuestNumber   int                `bson:"guestnumber,omitempty" json:"guestnumber,omitempty"`
+	Accommodation string             `bson:"accommodation,omitempty" json:"accommodation,omitempty"`
+	Accepted      string             `bson:"accepted,omitempty" json:"accepted,omitempty"`
 }
 
-func (User *Reservation) BeforeCreate(*mongo.Client) error {
-	User.ID = uuid.New()
+func (Reservation *Reservation) BeforeCreate(*mongo.Client) error {
+	Reservation.ID = primitive.NewObjectID()
 	return nil
 }

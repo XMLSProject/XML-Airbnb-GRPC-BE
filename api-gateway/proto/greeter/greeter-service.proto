@@ -26,6 +26,12 @@ service ReservationService {
       body: "*"
     };
   }
+  rpc Reserve(RequestForReserve) returns (ResponseForReserve) {
+    option (google.api.http) = {
+      post: "/makeReservation"
+      body: "reserve"
+    };
+  }
 }
 
 service LoginService {
@@ -75,6 +81,19 @@ message DeleteRequest {
 }
 message DeleteResponse {
   string dlt = 4;
+}
+message RequestForReserve {
+  ReserveInfo reserve = 3;
+}
+message ResponseForReserve {
+  string reserve = 4;
+}
+message ReserveInfo {
+        string fromDate = 2;
+        string toDate = 3;
+        int32 guestNumber = 4;
+        string accommodation = 5;
+        string accepted = 6;
 }
 message UpdateRequest {
   UpdateInfo upd = 3;

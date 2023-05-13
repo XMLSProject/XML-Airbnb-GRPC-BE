@@ -4,6 +4,7 @@ option go_package = "proto/reservation";
 
 service ReservationService {
   rpc GreetFromReservation(Request) returns (Response) {}
+  rpc Reserve(RequestForReserve) returns (ResponseForReserve) {}
 
 }
 
@@ -13,4 +14,17 @@ message Request {
 
 message Response {
   string greeting = 2;
+}
+message RequestForReserve {
+  ReserveInfo reserve = 3;
+}
+message ResponseForReserve {
+  string reserve = 4;
+}
+message ReserveInfo {
+        string fromDate = 2;
+        string toDate = 3;
+        int32 guestNumber = 4;
+        string accommodation = 5;
+        string accepted = 6;
 }
