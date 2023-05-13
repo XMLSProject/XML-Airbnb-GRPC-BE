@@ -63,6 +63,28 @@ func main() {
 	if err != nil {
 		log.Fatalln("Failed to register gateway:", err)
 	}
+	///////////////////////////////////////////////////////
+
+	connn7, errr7 := grpc.DialContext(
+		context.Background(),
+		cfg.ReservationServiceAddress,
+		grpc.WithBlock(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+
+	if errr7 != nil {
+		log.Fatalln("Failed to dial serverr:", errr7)
+	}
+	// Register Greeter
+	clientt7 := greeter.NewReservationServiceClient(connn7)
+	errr7 = greeter.RegisterReservationServiceHandlerClient(
+		context.Background(),
+		gwmux,
+		clientt7,
+	)
+	if errr7 != nil {
+		log.Fatalln("Failed to register gateway:", errr7)
+	}
 
 	///////////////////////////////////////////////////////
 

@@ -32,6 +32,24 @@ services:
       - login_db
     networks:
       - network
+  reservation_service:
+    image: reservation_service
+    container_name: reservation_service
+    hostname: reservation_service
+    build:
+      context: ./reservation-service/
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      RESERVATION_DB_HOST: ${RESERVATION_DB_HOST}
+      RESERVATION_DB_PORT: ${RESERVATION_DB_PORT}
+      RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
+      # MONGO_DB_URI: mongodb://root:pass@mongo:27017
+      # LOGIN_SERVICE_ADDRESS: ${LOGIN_SERVICE_ADDRESS}
+    depends_on:
+      - reservation_db
+    networks:
+      - network
 
   accommodation_service:
     image: accommodation_service
@@ -64,10 +82,12 @@ services:
       LOGIN_SERVICE_ADDRESS: login_service:8000
       ACCOMMODATION_SERVICE_ADDRESS: accommodation_service:8000
       GATEWAY_ADDRESS: ${GATEWAY_ADDRESS}
+      RESERVATION_SERVICE_ADDRESS: reservation_service:8000
     depends_on:
       - greeter_service
       - login_service
       - accommodation_service
+      - reservation_service
     networks:
       - network
     ports:
@@ -79,6 +99,15 @@ services:
     restart: on-failure
     ports:
       - "9000:27017"
+    networks:
+      - network
+
+  reservation_db:
+    image: mongo
+    container_name: reservation_db
+    restart: on-failure
+    ports:
+      - "9002:27017"
     networks:
       - network
 
