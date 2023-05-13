@@ -40,3 +40,16 @@ func (h ReservationHandler) Reserve(ctx context.Context, request *reservation.Re
 		Reserve: fmt.Sprintf("Succesfully created! %s", request),
 	}, nil
 }
+func (h ReservationHandler) DeleteReservation(ctx context.Context, request *reservation.RequestDeleteReservation) (*reservation.ResponseDeleteReservation, error) {
+	h.ResService.DeleteReservation(request.Delres)
+	return &reservation.ResponseDeleteReservation{
+		Delres: "Deleted",
+	}, nil
+}
+func (h ReservationHandler) AcceptReservation(ctx context.Context, request *reservation.DeleteRequest) (*reservation.DeleteResponse, error) {
+	fmt.Println(request.Dlt + " acce")
+	h.ResService.AcceptReservation(request.Dlt)
+	return &reservation.DeleteResponse{
+		Dlt: "Updated",
+	}, nil
+}

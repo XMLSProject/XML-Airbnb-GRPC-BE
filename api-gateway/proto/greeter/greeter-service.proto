@@ -32,6 +32,18 @@ service ReservationService {
       body: "reserve"
     };
   }
+  rpc DeleteReservation(RequestDeleteReservation) returns (ResponseDeleteReservation) {
+    option (google.api.http) = {
+      post: "/deleteReservation"
+      body: "delres"
+    };
+  }
+  rpc AcceptReservation(DeleteRequest) returns (DeleteResponse) {
+    option (google.api.http) = {
+      post: "/acceptReservation"
+      body: "dlt"
+    };
+  }
 }
 
 service LoginService {
@@ -76,6 +88,12 @@ service LoginService {
       };
    }
 }
+message RequestAccept {
+  string acce = 3;
+}
+message ResponseAccept {
+  string acce = 4;
+}
 message DeleteRequest {
   string dlt = 3;
 }
@@ -87,6 +105,12 @@ message RequestForReserve {
 }
 message ResponseForReserve {
   string reserve = 4;
+}
+message RequestDeleteReservation {
+  string delres = 3;
+}
+message ResponseDeleteReservation {
+  string delres = 4;
 }
 message ReserveInfo {
         string fromDate = 2;
