@@ -19,6 +19,15 @@ service GreeterService {
   }
 }
 
+service ReservationService {
+  rpc GreetFromReservation(Request) returns (Response) {
+    option (google.api.http) = {
+      post: "/reservation"
+      body: "*"
+    };
+  }
+}
+
 service LoginService {
   rpc GreetFromLogin(Request) returns (Response) {
     option (google.api.http) = {
