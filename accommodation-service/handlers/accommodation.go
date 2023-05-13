@@ -6,12 +6,12 @@ import (
 	"accomm_module/service"
 	"context"
 	"fmt"
-	"time"
-
 	"github.com/dgrijalva/jwt-go"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"time"
 )
 
 func NewAccommodationHandler(service *service.AccommodationService) *AccommodationHandler {
@@ -23,6 +23,46 @@ func NewAccommodationHandler(service *service.AccommodationService) *Accommodati
 type AccommodationHandler struct {
 	accommodation.UnimplementedAccommodationServiceServer
 	AccommodationService *service.AccommodationService
+}
+
+func parseeToken(token string) (jwt.MapClaims, error) {
+	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		return []byte("secret_key"), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	claims, ok := parsedToken.Claims.(jwt.MapClaims)
+	if !ok || !parsedToken.Valid {
+		return nil, fmt.Errorf("invalid token")
+	}
+
+	return claims, nil
+}
+
+func useerClaimFromToken(claims jwt.MapClaims) string {
+
+	sub, ok := claims["role"].(string)
+	if !ok {
+		return ""
+	}
+
+	return sub
+}
+
+func checkRole(ctx context.Context) string {
+	token, err := grpc_auth.AuthFromMD(ctx, "bearer")
+	if err != nil {
+		return ""
+	}
+
+	tokenInfo, _ := parseeToken(token)
+
+	role := useerClaimFromToken(tokenInfo)
+
+	fmt.Println("role is: " + role)
+	return role
 }
 
 func (h AccommodationHandler) GreetFromAccommodation(ctx context.Context, request *accommodation.Request) (*accommodation.Response, error) {
@@ -39,34 +79,40 @@ func (h AccommodationHandler) GreetFromAccommodation(ctx context.Context, reques
 }
 
 func (h AccommodationHandler) CreateAccommodation(ctx context.Context, request *accommodation.CreateAccommodationRequest) (*accommodation.CreateAccommodationResponse, error) {
-	var Accommodation = model.Accommodation{}
-	Accommodation.Name = request.GetReg().Name
-	Accommodation.Location = request.GetReg().Location
-	Accommodation.Benefits = request.GetReg().Benefits
-	Accommodation.Photos = request.GetReg().Photos
-	Accommodation.MinGuests = int(request.GetReg().MinGuests)
-	Accommodation.MaxGuests = int(request.GetReg().MaxGuests)
-	//Accommodation.Creator = request.GetReg().Creator
+	role := checkRole(ctx)
+	if role == "Host" {
+		var Accommodation = model.Accommodation{}
+		Accommodation.Name = request.GetReg().Name
+		Accommodation.Location = request.GetReg().Location
+		Accommodation.Benefits = request.GetReg().Benefits
+		Accommodation.Photos = request.GetReg().Photos
+		Accommodation.MinGuests = int(request.GetReg().MinGuests)
+		Accommodation.MaxGuests = int(request.GetReg().MaxGuests)
+		//Accommodation.Creator = request.GetReg().Creator
 
-	token, err := grpc_auth.AuthFromMD(ctx, "bearer")
-	if err != nil {
-		return nil, err
+		token, err := grpc_auth.AuthFromMD(ctx, "bearer")
+		if err != nil {
+			return nil, err
+		}
+
+		tokenInfo, _ := parseToken(token)
+
+		username := userClaimFromToken(tokenInfo)
+
+		fmt.Println("User id: " + username)
+
+		Accommodation.Creator = username
+		fmt.Println("Kreiram acco u handleru: " + Accommodation.Name)
+		fmt.Println("Creator: " + username)
+
+		h.AccommodationService.Create(&Accommodation)
+		return &accommodation.CreateAccommodationResponse{
+			Reg: &accommodation.Accommodation{},
+		}, nil
 	}
-
-	tokenInfo, _ := parseToken(token)
-
-	username := userClaimFromToken(tokenInfo)
-
-	fmt.Println("User id: " + username)
-
-	Accommodation.Creator = username
-	fmt.Println("Kreiram acco u handleru: " + Accommodation.Name)
-	fmt.Println("Creator: " + username)
-
-	h.AccommodationService.Create(&Accommodation)
 	return &accommodation.CreateAccommodationResponse{
 		Reg: &accommodation.Accommodation{},
-	}, nil
+	}, status.Errorf(codes.Unauthenticated, "You don't have permissions for this action")
 }
 
 func parseToken(token string) (jwt.MapClaims, error) {
@@ -96,19 +142,25 @@ func userClaimFromToken(claims jwt.MapClaims) string {
 }
 
 func (h AccommodationHandler) EditAccommodation(ctx context.Context, request *accommodation.EditAccoRequest) (*accommodation.EditAccoResponse, error) {
-	var accoId = request.GetReg().AccoId
-	var availableFrom = request.GetReg().AvailableFrom
-	var availableTo = request.GetReg().AvailableTo
-	var price = request.GetReg().Price
-	var isPricePerGuest = request.GetReg().IsPricePerGuest
+	role := checkRole(ctx)
+	if role == "Host" {
+		var accoId = request.GetReg().AccoId
+		var availableFrom = request.GetReg().AvailableFrom
+		var availableTo = request.GetReg().AvailableTo
+		var price = request.GetReg().Price
+		var isPricePerGuest = request.GetReg().IsPricePerGuest
 
-	layout := "2006-01-02T15:04:05Z"
-	availableFromDate, _ := time.Parse(layout, availableFrom)
-	objectId, _ := primitive.ObjectIDFromHex(accoId)
-	availableToDate, _ := time.Parse(layout, availableTo)
+		layout := "2006-01-02T15:04:05Z"
+		availableFromDate, _ := time.Parse(layout, availableFrom)
+		objectId, _ := primitive.ObjectIDFromHex(accoId)
+		availableToDate, _ := time.Parse(layout, availableTo)
 
-	h.AccommodationService.EditPriceAndAvailability(objectId, availableFromDate, availableToDate, price, isPricePerGuest)
+		h.AccommodationService.EditPriceAndAvailability(objectId, availableFromDate, availableToDate, price, isPricePerGuest)
+		return &accommodation.EditAccoResponse{
+			Reg: &accommodation.EditAccoInfo{},
+		}, nil
+	}
 	return &accommodation.EditAccoResponse{
 		Reg: &accommodation.EditAccoInfo{},
-	}, nil
+	}, status.Errorf(codes.Unauthenticated, "You don't have permissions for this action")
 }
