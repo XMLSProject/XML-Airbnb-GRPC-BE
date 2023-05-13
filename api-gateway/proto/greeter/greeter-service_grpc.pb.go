@@ -423,6 +423,7 @@ var LoginService_ServiceDesc = grpc.ServiceDesc{
 const (
 	AccommodationService_GreetFromAccommodation_FullMethodName = "/AccommodationService/GreetFromAccommodation"
 	AccommodationService_CreateAccommodation_FullMethodName    = "/AccommodationService/CreateAccommodation"
+	AccommodationService_EditAccommodation_FullMethodName      = "/AccommodationService/EditAccommodation"
 )
 
 // AccommodationServiceClient is the client API for AccommodationService service.
@@ -431,6 +432,7 @@ const (
 type AccommodationServiceClient interface {
 	GreetFromAccommodation(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
 	CreateAccommodation(ctx context.Context, in *CreateAccommodationRequest, opts ...grpc.CallOption) (*CreateAccommodationResponse, error)
+	EditAccommodation(ctx context.Context, in *EditAccoRequest, opts ...grpc.CallOption) (*EditAccoResponse, error)
 }
 
 type accommodationServiceClient struct {
@@ -459,12 +461,22 @@ func (c *accommodationServiceClient) CreateAccommodation(ctx context.Context, in
 	return out, nil
 }
 
+func (c *accommodationServiceClient) EditAccommodation(ctx context.Context, in *EditAccoRequest, opts ...grpc.CallOption) (*EditAccoResponse, error) {
+	out := new(EditAccoResponse)
+	err := c.cc.Invoke(ctx, AccommodationService_EditAccommodation_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AccommodationServiceServer is the server API for AccommodationService service.
 // All implementations must embed UnimplementedAccommodationServiceServer
 // for forward compatibility
 type AccommodationServiceServer interface {
 	GreetFromAccommodation(context.Context, *Request) (*Response, error)
 	CreateAccommodation(context.Context, *CreateAccommodationRequest) (*CreateAccommodationResponse, error)
+	EditAccommodation(context.Context, *EditAccoRequest) (*EditAccoResponse, error)
 	mustEmbedUnimplementedAccommodationServiceServer()
 }
 
@@ -477,6 +489,9 @@ func (UnimplementedAccommodationServiceServer) GreetFromAccommodation(context.Co
 }
 func (UnimplementedAccommodationServiceServer) CreateAccommodation(context.Context, *CreateAccommodationRequest) (*CreateAccommodationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAccommodation not implemented")
+}
+func (UnimplementedAccommodationServiceServer) EditAccommodation(context.Context, *EditAccoRequest) (*EditAccoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EditAccommodation not implemented")
 }
 func (UnimplementedAccommodationServiceServer) mustEmbedUnimplementedAccommodationServiceServer() {}
 
@@ -527,6 +542,24 @@ func _AccommodationService_CreateAccommodation_Handler(srv interface{}, ctx cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AccommodationService_EditAccommodation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EditAccoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccommodationServiceServer).EditAccommodation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AccommodationService_EditAccommodation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccommodationServiceServer).EditAccommodation(ctx, req.(*EditAccoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AccommodationService_ServiceDesc is the grpc.ServiceDesc for AccommodationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -541,6 +574,10 @@ var AccommodationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateAccommodation",
 			Handler:    _AccommodationService_CreateAccommodation_Handler,
+		},
+		{
+			MethodName: "EditAccommodation",
+			Handler:    _AccommodationService_EditAccommodation_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
