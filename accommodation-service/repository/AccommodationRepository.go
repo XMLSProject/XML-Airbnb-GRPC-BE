@@ -81,3 +81,55 @@ func (repo *AccommodationRepository) EditPriceAndAvailability(accoId primitive.O
 	fmt.Println("Successfully updated")
 	return nil
 }
+
+func (repo *AccommodationRepository) SearchAccommodations(location string, dateFrom time.Time, dateTo time.Time, guestNumber int) ([]model.SearchDTO, error) {
+	filter := bson.D{
+		{Key: "location", Value: location},
+		{Key: "availableFrom", Value: bson.D{{Key: "$lte", Value: dateFrom}}},
+		{Key: "availableTo", Value: bson.D{{Key: "$gte", Value: dateTo}}},
+		{Key: "minGuests", Value: bson.D{{Key: "$lte", Value: guestNumber}}},
+		{Key: "maxGuests", Value: bson.D{{Key: "$gte", Value: guestNumber}}},
+	}
+
+	cursor, err := repo.DatabaseConnection.Database("AccommodationsDB").Collection("accommodations").Find(context.Background(), filter)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to search accommodations")
+	}
+
+	defer cursor.Close(context.Background())
+
+	var accommodations []model.Accommodation
+	if err = cursor.All(context.Background(), &accommodations); err != nil {
+		fmt.Println("ERROR IN CURSOR: " + err.Error())
+		return nil, fmt.Errorf("Failed to search accommodations")
+	}
+	var accoDTO []model.SearchDTO
+	for _, acco := range accommodations {
+		var totalPrice float32
+		if acco.IsPricePerGuest {
+			totalPrice = float32(guestNumber) * acco.Price * float32(dateTo.Sub(dateFrom).Hours()/24)
+		} else {
+			totalPrice = acco.Price * float32(dateTo.Sub(dateFrom).Hours()/24)
+		}
+
+		dto := model.SearchDTO{
+			ID:              acco.ID,
+			Name:            acco.Name,
+			Location:        acco.Location,
+			Benefits:        acco.Benefits,
+			Photos:          acco.Photos,
+			MinGuests:       acco.MinGuests,
+			MaxGuests:       acco.MaxGuests,
+			Creator:         acco.Creator,
+			AvailableFrom:   acco.AvailableFrom,
+			AvailableTo:     acco.AvailableTo,
+			Price:           acco.Price,
+			IsPricePerGuest: acco.IsPricePerGuest,
+			TotalPrice:      totalPrice,
+		}
+
+		accoDTO = append(accoDTO, dto)
+	}
+
+	return accoDTO, nil
+}

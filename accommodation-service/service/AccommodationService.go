@@ -52,5 +52,13 @@ func (service *AccommodationService) EditPriceAndAvailability(accoId primitive.O
 
 	fmt.Println("Successfully updated")
 	return nil
+}
 
+func (service *AccommodationService) SearchAccommodations(location string, dateFrom time.Time, dateTo time.Time, guestNumber int) ([]model.SearchDTO, error) {
+	accommodations, err := service.AccommodationRepo.SearchAccommodations(location, dateFrom, dateTo, guestNumber)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to search accommodations: %v", err)
+	}
+
+	return accommodations, nil
 }
