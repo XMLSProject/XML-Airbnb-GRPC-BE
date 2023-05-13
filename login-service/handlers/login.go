@@ -6,11 +6,13 @@ import (
 	"first_init/proto/login"
 	"first_init/service"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
+	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"net/http"
 	"time"
-
-	"github.com/dgrijalva/jwt-go"
 )
 
 func NewAuthenticationHandler(service *service.UserService) *LoginHandler {
@@ -27,6 +29,46 @@ type LoginHandler struct {
 
 type UserHandler struct {
 	UserService *service.UserService
+}
+
+func parseToken(token string) (jwt.MapClaims, error) {
+	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		return []byte("secret_key"), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	claims, ok := parsedToken.Claims.(jwt.MapClaims)
+	if !ok || !parsedToken.Valid {
+		return nil, fmt.Errorf("invalid token")
+	}
+
+	return claims, nil
+}
+
+func userClaimFromToken(claims jwt.MapClaims) string {
+
+	sub, ok := claims["role"].(string)
+	if !ok {
+		return ""
+	}
+
+	return sub
+}
+
+func checkRole(ctx context.Context) string {
+	token, err := grpc_auth.AuthFromMD(ctx, "bearer")
+	if err != nil {
+		return ""
+	}
+
+	tokenInfo, _ := parseToken(token)
+
+	role := userClaimFromToken(tokenInfo)
+
+	fmt.Println("role is: " + role)
+	return role
 }
 
 func (h LoginHandler) GreetFromLogin(ctx context.Context, request *login.Request) (*login.Response, error) {
@@ -52,29 +94,42 @@ func (h LoginHandler) CreateUser(ctx context.Context, request *login.CreateUserR
 }
 func (h LoginHandler) UpdateUser(ctx context.Context, request *login.UpdateRequest) (*login.UpdateResponse, error) {
 	//var User *model.User
-	var User = model.User{}
-	User.ID, _ = primitive.ObjectIDFromHex(request.GetReg().Id)
-	User.Name = request.GetReg().Name
-	User.Surname = request.GetReg().Surname
-	User.Email = request.GetReg().Email
-	User.Username = request.GetReg().Username
-	User.Password = request.GetReg().Password
-	User.Role = "User"
-	// print the JSON string
-	h.UserService.UpdateUser(&User)
-	fmt.Println("Iznad je request")
+	role := checkRole(ctx)
+	if role == "User" || role == "Host" {
+		var User = model.User{}
+		User.ID, _ = primitive.ObjectIDFromHex(request.GetReg().Id)
+		User.Name = request.GetReg().Name
+		User.Surname = request.GetReg().Surname
+		User.Email = request.GetReg().Email
+		User.Username = request.GetReg().Username
+		User.Password = request.GetReg().Password
+		User.Role = "User"
+		// print the JSON string
+		h.UserService.UpdateUser(&User)
+		fmt.Println("Iznad je request")
+		return &login.UpdateResponse{
+			Reg: &login.UpdateInfo{},
+		}, nil
+	}
 	return &login.UpdateResponse{
 		Reg: &login.UpdateInfo{},
-	}, nil
+	}, status.Errorf(codes.Unauthenticated, "You don't have permissions for this action")
 }
 func (h LoginHandler) DeleteUser(ctx context.Context, request *login.DeleteRequest) (*login.DeleteResponse, error) {
 	//var User *model.User
 	// print the JSON string
-	h.UserService.DeleteUser(request.Dlt)
-	fmt.Println("Iznad je request")
+	role := checkRole(ctx)
+	if role == "User" || role == "Host" {
+		fmt.Println(request.Dlt)
+		h.UserService.DeleteUser(request.Dlt)
+		fmt.Println("Iznad je request")
+		return &login.DeleteResponse{
+			Dlt: "Deleted",
+		}, nil
+	}
 	return &login.DeleteResponse{
 		Dlt: "Deleted",
-	}, nil
+	}, status.Errorf(codes.Unauthenticated, "You don't have permissions for this action")
 }
 
 func (h LoginHandler) Login(ctx context.Context, request *login.LoginRequest) (*login.LoginResponse, error) {
