@@ -85,3 +85,11 @@ func (repo *AccommodationService) CheckOne(id string) (string, error) {
 	fmt.Println("Proso interakcije s bazom")
 	return ret, err
 }
+func (service *AccommodationService) DeleteAllAccom(creator string) error {
+	err := service.AccommodationRepo.DeleteAllAccom(creator)
+	if err != nil {
+		return fmt.Errorf("Failed to get accommodations: %v", err)
+	}
+
+	return nil
+}

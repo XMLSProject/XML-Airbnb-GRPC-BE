@@ -208,11 +208,16 @@ service AccommodationService {
         body: "name"
       };
    }
-    rpc GetAllAccommodationsByCreator(AllAccommodationsRequest) returns (AllAccommodationsResponse)
-   {
+    rpc GetAllAccommodationsByCreator(AllAccommodationsRequest) returns (AllAccommodationsResponse){
       option (google.api.http) = {
          post: "/allByCreator"
           body: "nothing"
+      };
+   }
+   rpc DeleteAllAccommodation(Request) returns (Response){
+      option (google.api.http) = {
+         post: "/delByCreator"
+          body: "name"
       };
    }
 }

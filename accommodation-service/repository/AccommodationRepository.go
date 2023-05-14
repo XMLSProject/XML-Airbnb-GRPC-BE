@@ -148,20 +148,6 @@ func (repo *AccommodationRepository) GetAllAccommodations() ([]model.Accommodati
 
 	return accommodations, nil
 }
-func (repo *AccommodationRepository) GetAllAccommodationsByCreator(creator string) ([]model.Accommodation, error) {
-	cursor, err := repo.DatabaseConnection.Database("AccommodationsDB").Collection("accommodations").Find(context.Background(), bson.M{"creator": creator})
-	if err != nil {
-		return nil, fmt.Errorf("failed to get accommodations: %v", err)
-	}
-	defer cursor.Close(context.Background())
-
-	var accommodations []model.Accommodation
-	if err := cursor.All(context.Background(), &accommodations); err != nil {
-		return nil, fmt.Errorf("failed to decode accommodations: %v", err)
-	}
-
-	return accommodations, nil
-}
 func (repo *AccommodationRepository) CheckHere(creator string) (string, error) {
 	objectId, _ := primitive.ObjectIDFromHex(creator)
 	cursor, err := repo.DatabaseConnection.Database("AccommodationsDB").Collection("accommodations").Find(context.Background(), bson.M{"_id": objectId})
@@ -177,15 +163,24 @@ func (repo *AccommodationRepository) CheckHere(creator string) (string, error) {
 
 	return accommodations[0].Acception, nil
 }
-func (repo *AccommodationRepository) CheckOne(id string) (string, error) {
-	var Accommodation = model.Accommodation{}
-	fmt.Println(id)
-	objectId, _ := primitive.ObjectIDFromHex(id)
-	filter := bson.D{{Key: "_id", Value: objectId}}
-	fmt.Println("Doso do interakcije s bazom")
-	err := repo.DatabaseConnection.Database("AccommodationDB").Collection("accommodations").FindOne(context.TODO(), filter).Decode(&Accommodation)
-	fmt.Println("Proso interakcije s bazom")
-	fmt.Println(Accommodation.Acception)
-	fmt.Println(Accommodation.Name)
-	return Accommodation.Acception, err
+func (repo *AccommodationRepository) GetAllAccommodationsByCreator(creator string) ([]model.Accommodation, error) {
+	cursor, err := repo.DatabaseConnection.Database("AccommodationsDB").Collection("accommodations").Find(context.Background(), bson.M{"creator": creator})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get accommodations: %v", err)
+	}
+	defer cursor.Close(context.Background())
+
+	var accommodations []model.Accommodation
+	if err := cursor.All(context.Background(), &accommodations); err != nil {
+		return nil, fmt.Errorf("failed to decode accommodations: %v", err)
+	}
+
+	return accommodations, nil
+}
+func (repo *AccommodationRepository) DeleteAllAccom(creator string) error {
+	_, err := repo.DatabaseConnection.Database("AccommodationsDB").Collection("accommodations").DeleteMany(context.Background(), bson.M{"creator": creator})
+	if err != nil {
+		return fmt.Errorf("failed to get accommodations: %v", err)
+	}
+	return nil
 }
