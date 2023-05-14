@@ -135,3 +135,25 @@ func (repo *ResRepository) GetAllReservationsByAccommodation(accoId string) (boo
 
 	return true, nil
 }
+
+func (repo *ResRepository) CheckReservationsByDates(accoId string, dateFrom time.Time, dateTo time.Time) (bool, error) {
+	cursor, err := repo.DatabaseConnection.Database("ReservationDB").Collection("reservations").Find(context.Background(), bson.M{"accommodation": accoId})
+	if err != nil {
+		return false, fmt.Errorf("failed to get reservations: %v", err)
+	}
+	defer cursor.Close(context.Background())
+	var result = true
+	var reservations []model.Reservation
+	if err := cursor.All(context.Background(), &reservations); err != nil {
+		return false, fmt.Errorf("failed to decode reservations: %v", err)
+	}
+	for _, reservation := range reservations {
+		// Access individual reservation properties using the dot notation
+		if reservation.Accepted == "1" {
+			if (dateFrom.After(reservation.FromDate) && dateFrom.Before(reservation.ToDate)) || (dateTo.After(reservation.FromDate) && dateTo.Before(reservation.ToDate)) {
+				result = false
+			}
+		}
+	}
+	return result, nil
+}

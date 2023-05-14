@@ -149,3 +149,18 @@ func (h ReservationHandler) CheckReservations(ctx context.Context, request *rese
 		Greeting: "There are reservations",
 	}, nil
 }
+
+func (h ReservationHandler) CheckReservationsByDates(ctx context.Context, request *reservation.CheckRequest) (*reservation.CheckResponse, error) {
+	var accoId = request.GetCheckInfo().AccoId
+	var dateFrom = request.GetCheckInfo().DateFrom
+	var dateTo = request.GetCheckInfo().DateTo
+
+	layout := "2006-01-02T15:04:05Z"
+	dateFromDate, _ := time.Parse(layout, dateFrom)
+	dateToDate, _ := time.Parse(layout, dateTo)
+
+	checker, _ := h.ResService.CheckReservationsByDates(accoId, dateFromDate, dateToDate)
+	return &reservation.CheckResponse{
+		CheckRes: checker,
+	}, nil
+}

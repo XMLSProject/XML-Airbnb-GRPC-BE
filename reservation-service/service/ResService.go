@@ -46,6 +46,16 @@ func (service *ResService) GetAllAccommodationsByCreator(creator string) (bool, 
 
 	return accommodations, nil
 }
+
+func (service *ResService) CheckReservationsByDates(accoId string, dateFrom time.Time, dateTo time.Time) (bool, error) {
+	accommodations, err := service.ResRepo.CheckReservationsByDates(accoId, dateFrom, dateTo)
+	if err != nil {
+		return true, fmt.Errorf("Failed to get accommodations: %v", err)
+	}
+
+	return accommodations, nil
+}
+
 func (service *ResService) FindOne(creator string) (*model.Reservation, error) {
 	accommodations, err := service.ResRepo.FindOne(creator)
 	if err != nil {
@@ -59,9 +69,3 @@ func (service *ResService) FindOneByDate(fromDate time.Time, toDate time.Time) b
 
 	return accommodations
 }
-
-// func (service *ResService) FindOneByDateTwo(fromDate time.Time, toDate time.Time) bool {
-// 	accommodations := service.ResRepo.FindOneByDateTwo(fromDate, toDate)
-
-// 	return accommodations
-// }
