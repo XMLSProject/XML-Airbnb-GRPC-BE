@@ -7,6 +7,7 @@ import (
 	"errors"
 	"first_init/model"
 	"fmt"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -85,7 +86,7 @@ func (repo *UserRepository) UpdateUser(user *model.User) error {
 func (repo *UserRepository) DeleteUser(email string) error {
 	_, err := repo.DatabaseConnection.Database("UserDB").Collection("users").DeleteOne(
 		context.TODO(),
-		bson.M{"email": email},
+		bson.M{"username": email},
 	)
 	if err != nil {
 		return err

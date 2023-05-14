@@ -142,9 +142,10 @@ func (h LoginHandler) DeleteUser(ctx context.Context, request *login.DeleteReque
 	//var User *model.User
 	// print the JSON string
 	role := checkRole(ctx)
+	usr := checkUsername(ctx)
 	if role == "User" || role == "Host" {
 		fmt.Println(request.Dlt)
-		h.UserService.DeleteUser(request.Dlt)
+		h.UserService.DeleteUser(usr)
 		fmt.Println("Iznad je request")
 		return &login.DeleteResponse{
 			Dlt: "Deleted",
