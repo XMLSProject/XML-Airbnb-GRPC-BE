@@ -89,6 +89,7 @@ func (h AccommodationHandler) CreateAccommodation(ctx context.Context, request *
 		Accommodation.Photos = request.GetReg().Photos
 		Accommodation.MinGuests = int(request.GetReg().MinGuests)
 		Accommodation.MaxGuests = int(request.GetReg().MaxGuests)
+		Accommodation.Acception = request.GetReg().Acception
 		//Accommodation.Creator = request.GetReg().Creator
 
 		token, err := grpc_auth.AuthFromMD(ctx, "bearer")

@@ -20,6 +20,7 @@ type Accommodation struct {
 	AvailableTo     time.Time          `bson:"availableTo,omitempty" json:"availableTo,omitempty"`
 	Price           float32            `bson:"price,omitempty" json:"price,omitempty"`
 	IsPricePerGuest bool               `bson:"isPricePerGuest,omitempty" json:"isPricePerGuest,omitempty"`
+	Acception       string             `bson:"acception,omitempty" json:"acception,omitempty"`
 }
 
 func (Accommodation *Accommodation) BeforeCreate(*mongo.Client) error {

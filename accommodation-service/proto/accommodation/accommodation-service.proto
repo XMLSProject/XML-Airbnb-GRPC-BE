@@ -9,6 +9,7 @@ service AccommodationService {
   rpc SearchAccommodation(SearchAccoRequest) returns (SearchAccoResponse) {}
   rpc GetAllAccommodations(AllAccommodationsRequest) returns (AllAccommodationsResponse) {}
   rpc GetAllAccommodationsByCreator(AllAccommodationsRequest) returns (AllAccommodationsResponse){}
+
 }
 
 message Request {
@@ -35,6 +36,7 @@ message Accommodation {
   repeated string photos = 5;
   int32 minGuests = 6;
   int32 maxGuests = 7;
+  string acception = 8;
 }
 
 message EditAccoRequest {

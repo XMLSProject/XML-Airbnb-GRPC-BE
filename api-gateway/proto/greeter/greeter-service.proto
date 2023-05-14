@@ -226,6 +226,7 @@ message Accommodation {
   repeated string photos = 5;
   int32 minGuests = 6;
   int32 maxGuests = 7;
+  string acception = 8;
 }
 
 message Request {
