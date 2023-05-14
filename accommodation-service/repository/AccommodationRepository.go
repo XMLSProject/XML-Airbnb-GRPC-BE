@@ -148,3 +148,17 @@ func (repo *AccommodationRepository) GetAllAccommodations() ([]model.Accommodati
 
 	return accommodations, nil
 }
+func (repo *AccommodationRepository) GetAllAccommodationsByCreator(creator string) ([]model.Accommodation, error) {
+	cursor, err := repo.DatabaseConnection.Database("AccommodationsDB").Collection("accommodations").Find(context.Background(), bson.M{"creator": creator})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get accommodations: %v", err)
+	}
+	defer cursor.Close(context.Background())
+
+	var accommodations []model.Accommodation
+	if err := cursor.All(context.Background(), &accommodations); err != nil {
+		return nil, fmt.Errorf("failed to decode accommodations: %v", err)
+	}
+
+	return accommodations, nil
+}

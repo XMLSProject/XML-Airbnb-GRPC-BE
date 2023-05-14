@@ -3,14 +3,15 @@ package handler
 import (
 	"context"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
-	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"res_init/model"
 	"res_init/proto/reservation"
 	"res_init/service"
 	"time"
+
+	"github.com/dgrijalva/jwt-go"
+	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func NewReservationHandler(service *service.ResService) *ReservationHandler {
@@ -114,4 +115,16 @@ func (h ReservationHandler) AcceptReservation(ctx context.Context, request *rese
 	return &reservation.DeleteResponse{
 		Dlt: "Error",
 	}, status.Errorf(codes.Unauthenticated, "You don't have permissions for this action")
+}
+func (h ReservationHandler) CheckReservations(ctx context.Context, request *reservation.Request) (*reservation.Response, error) {
+	fmt.Println(request.Name + " acce")
+	checker, _ := h.ResService.GetAllAccommodationsByCreator(request.Name)
+	if checker {
+		return &reservation.Response{
+			Greeting: "There is no reservations",
+		}, nil
+	}
+	return &reservation.Response{
+		Greeting: "There are reservations",
+	}, nil
 }

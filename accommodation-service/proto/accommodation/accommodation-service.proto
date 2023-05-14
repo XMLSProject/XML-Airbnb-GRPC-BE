@@ -8,6 +8,7 @@ service AccommodationService {
   rpc EditAccommodation(EditAccoRequest) returns (EditAccoResponse){}
   rpc SearchAccommodation(SearchAccoRequest) returns (SearchAccoResponse) {}
   rpc GetAllAccommodations(AllAccommodationsRequest) returns (AllAccommodationsResponse) {}
+  rpc GetAllAccommodationsByCreator(AllAccommodationsRequest) returns (AllAccommodationsResponse){}
 }
 
 message Request {

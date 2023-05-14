@@ -71,3 +71,12 @@ func (service *AccommodationService) GetAllAccommodations() ([]model.Accommodati
 
 	return accommodations, nil
 }
+
+func (service *AccommodationService) GetAllAccommodationsByCreator(creator string) ([]model.Accommodation, error) {
+	accommodations, err := service.AccommodationRepo.GetAllAccommodationsByCreator(creator)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to get accommodations: %v", err)
+	}
+
+	return accommodations, nil
+}
