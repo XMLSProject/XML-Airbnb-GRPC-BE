@@ -10,6 +10,7 @@ service ReservationService {
   rpc CheckReservations(Request) returns (Response) {}
   rpc CheckReservationsByDates(CheckRequest) returns (CheckResponse) {}
   rpc GetAllReservations(AllReservationsRequest) returns (AllReservationsResponse){}
+  rpc CheckForGuests(Request) returns (Response) {}
 
 }
 message DeleteRequest {

@@ -92,6 +92,18 @@ func (h ReservationHandler) GreetFromReservation(ctx context.Context, request *r
 		Greeting: fmt.Sprintf("Hihi from reservation %s!", request.Name),
 	}, nil
 }
+func (h ReservationHandler) CheckForGuests(ctx context.Context, request *reservation.Request) (*reservation.Response, error) {
+	usr := checkUsername(ctx)
+	bl, _ := h.ResService.CheckReservationForUser(usr)
+	if bl {
+		return &reservation.Response{
+			Greeting: fmt.Sprintf("There is no reservations"),
+		}, nil
+	}
+	return &reservation.Response{
+		Greeting: fmt.Sprintf("There are reservations"),
+	}, nil
+}
 func (h ReservationHandler) Reserve(ctx context.Context, request *reservation.RequestForReserve) (*reservation.ResponseForReserve, error) {
 	role := checkRole(ctx)
 	if role == "User" {

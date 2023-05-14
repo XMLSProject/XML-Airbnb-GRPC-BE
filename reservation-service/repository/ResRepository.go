@@ -136,6 +136,23 @@ func (repo *ResRepository) GetAllReservationsByAccommodation(accoId string) (boo
 
 	return true, nil
 }
+func (repo *ResRepository) CheckReservationForUser(username string) (bool, error) {
+	cursor, err := repo.DatabaseConnection.Database("ReservationDB").Collection("reservations").Find(context.Background(), bson.M{"guestUsername": username})
+	if err != nil {
+		return true, fmt.Errorf("failed to get reservations: %v", err)
+	}
+	defer cursor.Close(context.Background())
+
+	var accommodations []model.Reservation
+	if err := cursor.All(context.Background(), &accommodations); err != nil {
+		return true, fmt.Errorf("failed to decode accommodations: %v", err)
+	}
+	if len(accommodations) != 0 {
+		return false, nil
+	}
+
+	return true, nil
+}
 
 func (repo *ResRepository) CheckReservationsByDates(accoId string, dateFrom time.Time, dateTo time.Time) (bool, error) {
 	cursor, err := repo.DatabaseConnection.Database("ReservationDB").Collection("reservations").Find(context.Background(), bson.M{"accommodation": accoId})

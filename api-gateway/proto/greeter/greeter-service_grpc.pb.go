@@ -148,6 +148,7 @@ type ReservationServiceClient interface {
 	CheckReservations(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
 	Reserve(ctx context.Context, in *RequestForReserve, opts ...grpc.CallOption) (*ResponseForReserve, error)
 	DeleteReservation(ctx context.Context, in *RequestDeleteReservation, opts ...grpc.CallOption) (*ResponseDeleteReservation, error)
+	CheckForGuests(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
 	AcceptReservation(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
 	CheckReservationsByDates(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*CheckResponse, error)
 	GetAllReservations(ctx context.Context, in *AllReservationsRequest, opts ...grpc.CallOption) (*AllReservationsResponse, error)
@@ -197,6 +198,15 @@ func (c *reservationServiceClient) DeleteReservation(ctx context.Context, in *Re
 	return out, nil
 }
 
+func (c *reservationServiceClient) CheckForGuests(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := c.cc.Invoke(ctx, "/ReservationService/CheckForGuests", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *reservationServiceClient) AcceptReservation(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error) {
 	out := new(DeleteResponse)
 	err := c.cc.Invoke(ctx, "/ReservationService/AcceptReservation", in, out, opts...)
@@ -232,6 +242,7 @@ type ReservationServiceServer interface {
 	CheckReservations(context.Context, *Request) (*Response, error)
 	Reserve(context.Context, *RequestForReserve) (*ResponseForReserve, error)
 	DeleteReservation(context.Context, *RequestDeleteReservation) (*ResponseDeleteReservation, error)
+	CheckForGuests(context.Context, *Request) (*Response, error)
 	AcceptReservation(context.Context, *DeleteRequest) (*DeleteResponse, error)
 	CheckReservationsByDates(context.Context, *CheckRequest) (*CheckResponse, error)
 	GetAllReservations(context.Context, *AllReservationsRequest) (*AllReservationsResponse, error)
@@ -253,6 +264,9 @@ func (UnimplementedReservationServiceServer) Reserve(context.Context, *RequestFo
 }
 func (UnimplementedReservationServiceServer) DeleteReservation(context.Context, *RequestDeleteReservation) (*ResponseDeleteReservation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteReservation not implemented")
+}
+func (UnimplementedReservationServiceServer) CheckForGuests(context.Context, *Request) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckForGuests not implemented")
 }
 func (UnimplementedReservationServiceServer) AcceptReservation(context.Context, *DeleteRequest) (*DeleteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AcceptReservation not implemented")
@@ -348,6 +362,24 @@ func _ReservationService_DeleteReservation_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ReservationService_CheckForGuests_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Request)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReservationServiceServer).CheckForGuests(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ReservationService/CheckForGuests",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReservationServiceServer).CheckForGuests(ctx, req.(*Request))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ReservationService_AcceptReservation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteRequest)
 	if err := dec(in); err != nil {
@@ -424,6 +456,10 @@ var ReservationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteReservation",
 			Handler:    _ReservationService_DeleteReservation_Handler,
+		},
+		{
+			MethodName: "CheckForGuests",
+			Handler:    _ReservationService_CheckForGuests_Handler,
 		},
 		{
 			MethodName: "AcceptReservation",
