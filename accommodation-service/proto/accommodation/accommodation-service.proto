@@ -10,6 +10,7 @@ service AccommodationService {
   rpc GetAllAccommodations(AllAccommodationsRequest) returns (AllAccommodationsResponse) {}
   rpc GetAllAccommodationsByCreator(AllAccommodationsRequest) returns (AllAccommodationsResponse){}
   rpc CheckAcceptionType(Request) returns (Response) {}
+  rpc DeleteAllAccommodation(Request) returns (Response){}
 }
 
 message Request {

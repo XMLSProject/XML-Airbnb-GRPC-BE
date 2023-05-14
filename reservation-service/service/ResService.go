@@ -55,3 +55,17 @@ func (service *ResService) CheckReservationsByDates(accoId string, dateFrom time
 
 	return accommodations, nil
 }
+
+func (service *ResService) FindOne(creator string) (*model.Reservation, error) {
+	accommodations, err := service.ResRepo.FindOne(creator)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to get accommodations: %v", err)
+	}
+
+	return accommodations, nil
+}
+func (service *ResService) FindOneByDate(fromDate time.Time, toDate time.Time) bool {
+	accommodations := service.ResRepo.FindOneByDate(fromDate, toDate)
+
+	return accommodations
+}

@@ -297,3 +297,15 @@ func (h AccommodationHandler) GetAllAccommodationsByCreator(ctx context.Context,
 
 	return response, nil
 }
+func (h AccommodationHandler) DeleteAllAccommodation(ctx context.Context, request *accommodation.Request) (*accommodation.Response, error) {
+	err := h.AccommodationService.DeleteAllAccom(request.Name)
+	if err != nil {
+		fmt.Println("Error while retrieving all accommodations")
+		return nil, err
+	}
+	response := &accommodation.Response{
+		Greeting: "Deleted",
+	}
+
+	return response, nil
+}

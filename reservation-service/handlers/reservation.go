@@ -86,10 +86,19 @@ func (h ReservationHandler) Reserve(ctx context.Context, request *reservation.Re
 		Reservation.FromDate, _ = time.Parse(layout, request.GetReserve().FromDate)
 		Reservation.ToDate, _ = time.Parse(layout, request.GetReserve().ToDate)
 		//objectId, _ := primitive.ObjectIDFromHex(accoId)
-		h.ResService.Create(&Reservation)
+		fmt.Println(Reservation.FromDate)
+		bul := h.ResService.FindOneByDate(Reservation.FromDate, Reservation.ToDate)
+		//bult := h.ResService.FindOneByDateTwo(Reservation.FromDate, Reservation.ToDate)
+		if bul {
+			h.ResService.Create(&Reservation)
+			return &reservation.ResponseForReserve{
+				Reserve: fmt.Sprintf("Succesfully created! %s", request),
+			}, nil
+		}
 		return &reservation.ResponseForReserve{
-			Reserve: fmt.Sprintf("Succesfully created! %s", request),
+			Reserve: fmt.Sprintf("Reservation exist for that dates"),
 		}, nil
+
 	}
 	return &reservation.ResponseForReserve{
 		Reserve: "Error",
@@ -98,10 +107,17 @@ func (h ReservationHandler) Reserve(ctx context.Context, request *reservation.Re
 func (h ReservationHandler) DeleteReservation(ctx context.Context, request *reservation.RequestDeleteReservation) (*reservation.ResponseDeleteReservation, error) {
 	role := checkRole(ctx)
 	if role == "User" || role == "Host" {
-		h.ResService.DeleteReservation(request.Delres)
+		acc, _ := h.ResService.FindOne(request.Delres)
+		if time.Now().Before(acc.FromDate) {
+			h.ResService.DeleteReservation(request.Delres)
+			return &reservation.ResponseDeleteReservation{
+				Delres: "Deleted",
+			}, nil
+		}
 		return &reservation.ResponseDeleteReservation{
 			Delres: "Deleted",
-		}, nil
+		}, status.Errorf(codes.Aborted, "Date is not before reservation date")
+
 	}
 	return &reservation.ResponseDeleteReservation{
 		Delres: "Error",

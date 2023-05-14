@@ -56,6 +56,59 @@ func (repo *ResRepository) AcceptReservation(id string) error {
 	fmt.Println("Successfully updated")
 	return nil
 }
+func (repo *ResRepository) FindOne(creator string) (*model.Reservation, error) {
+	objectId, _ := primitive.ObjectIDFromHex(creator)
+	cursor, err := repo.DatabaseConnection.Database("ReservationDB").Collection("reservations").Find(context.Background(), bson.M{"_id": objectId})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get accommodations: %v", err)
+	}
+	defer cursor.Close(context.Background())
+
+	var accommodations []model.Reservation
+	if err := cursor.All(context.Background(), &accommodations); err != nil {
+		return nil, fmt.Errorf("failed to decode accommodations: %v", err)
+	}
+
+	return &accommodations[0], nil
+}
+func (repo *ResRepository) FindOneByDate(fromDate time.Time, toDate time.Time) bool {
+	cursor, err := repo.DatabaseConnection.Database("ReservationDB").Collection("reservations").Find(context.Background(), bson.D{})
+	if err != nil {
+		return true
+	}
+	defer cursor.Close(context.Background())
+
+	var accommodations []model.Reservation
+	if err := cursor.All(context.Background(), &accommodations); err != nil {
+		return true
+	}
+	for _, accommodation := range accommodations {
+		// Perform the desired operation with each accommodation
+		if (accommodation.FromDate.Before(fromDate) && accommodation.ToDate.After(fromDate)) || (accommodation.FromDate.Before(toDate) && accommodation.ToDate.After(toDate)) || (accommodation.FromDate.After(fromDate) && accommodation.FromDate.Before(toDate)) || (accommodation.ToDate.After(fromDate) && accommodation.ToDate.Before(toDate)) {
+			return false
+		}
+	}
+
+	return true
+}
+func (repo *ResRepository) FindOneByDateTwo(fromDate time.Time, toDate time.Time) bool {
+	filter := bson.M{
+		"fromDate": bson.M{"$lte": toDate},
+		"toDate":   bson.M{"$gte": toDate},
+	}
+	cursor, err := repo.DatabaseConnection.Database("ReservationDB").Collection("reservations").Find(context.Background(), filter)
+	if err != nil {
+		return true
+	}
+	defer cursor.Close(context.Background())
+
+	var accommodations []model.Reservation
+	if err := cursor.All(context.Background(), &accommodations); err != nil {
+		return true
+	}
+
+	return false
+}
 
 func (repo *ResRepository) GetAllReservationsByAccommodation(accoId string) (bool, error) {
 	cursor, err := repo.DatabaseConnection.Database("ReservationDB").Collection("reservations").Find(context.Background(), bson.M{"accommodation": accoId})
