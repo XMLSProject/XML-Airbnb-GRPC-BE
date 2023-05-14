@@ -703,6 +703,7 @@ const (
 	AccommodationService_GetAllAccommodations_FullMethodName          = "/AccommodationService/GetAllAccommodations"
 	AccommodationService_CheckAcceptionType_FullMethodName            = "/AccommodationService/CheckAcceptionType"
 	AccommodationService_GetAllAccommodationsByCreator_FullMethodName = "/AccommodationService/GetAllAccommodationsByCreator"
+	AccommodationService_DeleteAllAccommodation_FullMethodName        = "/AccommodationService/DeleteAllAccommodation"
 )
 
 // AccommodationServiceClient is the client API for AccommodationService service.
@@ -792,7 +793,7 @@ func (c *accommodationServiceClient) GetAllAccommodationsByCreator(ctx context.C
 
 func (c *accommodationServiceClient) DeleteAllAccommodation(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error) {
 	out := new(Response)
-	err := c.cc.Invoke(ctx, "/AccommodationService/DeleteAllAccommodation", in, out, opts...)
+	err := c.cc.Invoke(ctx, AccommodationService_DeleteAllAccommodation_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -991,7 +992,7 @@ func _AccommodationService_DeleteAllAccommodation_Handler(srv interface{}, ctx c
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/AccommodationService/DeleteAllAccommodation",
+		FullMethod: AccommodationService_DeleteAllAccommodation_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccommodationServiceServer).DeleteAllAccommodation(ctx, req.(*Request))
