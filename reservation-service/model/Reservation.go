@@ -1,9 +1,10 @@
 package model
 
 import (
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"time"
 )
 
 type Reservation struct {
@@ -13,6 +14,7 @@ type Reservation struct {
 	GuestNumber   int                `bson:"guestnumber,omitempty" json:"guestnumber,omitempty"`
 	Accommodation string             `bson:"accommodation,omitempty" json:"accommodation,omitempty"`
 	Accepted      string             `bson:"accepted,omitempty" json:"accepted,omitempty"`
+	Acception     string             `bson:"acception,omitempty" json:"acception,omitempty"`
 }
 
 func (Reservation *Reservation) BeforeCreate(*mongo.Client) error {

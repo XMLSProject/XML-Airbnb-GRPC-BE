@@ -124,6 +124,7 @@ message ReserveInfo {
         int32 guestNumber = 4;
         string accommodation = 5;
         string accepted = 6;
+        string acception = 7;
 }
 message UpdateRequest {
   UpdateInfo upd = 3;
@@ -201,6 +202,12 @@ service AccommodationService {
         get: "/allAcco"
       };
    }
+   rpc CheckAcceptionType(Request) returns (Response) {
+    option (google.api.http) = {
+        post: "/checkType"
+        body: "name"
+      };
+   }
     rpc GetAllAccommodationsByCreator(AllAccommodationsRequest) returns (AllAccommodationsResponse)
    {
       option (google.api.http) = {
@@ -226,6 +233,7 @@ message Accommodation {
   repeated string photos = 5;
   int32 minGuests = 6;
   int32 maxGuests = 7;
+  string acception = 8;
 }
 
 message Request {

@@ -79,6 +79,19 @@ func (h AccommodationHandler) GreetFromAccommodation(ctx context.Context, reques
 	}, nil
 }
 
+func (h AccommodationHandler) CheckAcceptionType(ctx context.Context, request *accommodation.Request) (*accommodation.Response, error) {
+
+	ret, err := h.AccommodationService.CheckOne(request.Name)
+	if err != nil {
+		return &accommodation.Response{
+			Greeting: fmt.Sprintf(ret),
+		}, err
+	}
+	return &accommodation.Response{
+		Greeting: fmt.Sprintf(ret),
+	}, nil
+}
+
 func (h AccommodationHandler) CreateAccommodation(ctx context.Context, request *accommodation.CreateAccommodationRequest) (*accommodation.CreateAccommodationResponse, error) {
 	role := checkRole(ctx)
 	if role == "Host" {
@@ -89,6 +102,7 @@ func (h AccommodationHandler) CreateAccommodation(ctx context.Context, request *
 		Accommodation.Photos = request.GetReg().Photos
 		Accommodation.MinGuests = int(request.GetReg().MinGuests)
 		Accommodation.MaxGuests = int(request.GetReg().MaxGuests)
+		Accommodation.Acception = request.GetReg().Acception
 		//Accommodation.Creator = request.GetReg().Creator
 
 		token, err := grpc_auth.AuthFromMD(ctx, "bearer")
