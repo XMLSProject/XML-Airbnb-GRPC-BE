@@ -448,6 +448,7 @@ var ReservationService_ServiceDesc = grpc.ServiceDesc{
 type LoginServiceClient interface {
 	GreetFromLogin(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
 	GreetFromLoginTest(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
+	GetUser(ctx context.Context, in *RequestGetUser, opts ...grpc.CallOption) (*ResponseGetUser, error)
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	UpdateUser(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateResponse, error)
@@ -474,6 +475,15 @@ func (c *loginServiceClient) GreetFromLogin(ctx context.Context, in *Request, op
 func (c *loginServiceClient) GreetFromLoginTest(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error) {
 	out := new(Response)
 	err := c.cc.Invoke(ctx, "/LoginService/GreetFromLoginTest", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *loginServiceClient) GetUser(ctx context.Context, in *RequestGetUser, opts ...grpc.CallOption) (*ResponseGetUser, error) {
+	out := new(ResponseGetUser)
+	err := c.cc.Invoke(ctx, "/LoginService/GetUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -522,6 +532,7 @@ func (c *loginServiceClient) DeleteUser(ctx context.Context, in *DeleteRequest, 
 type LoginServiceServer interface {
 	GreetFromLogin(context.Context, *Request) (*Response, error)
 	GreetFromLoginTest(context.Context, *Request) (*Response, error)
+	GetUser(context.Context, *RequestGetUser) (*ResponseGetUser, error)
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	UpdateUser(context.Context, *UpdateRequest) (*UpdateResponse, error)
@@ -538,6 +549,9 @@ func (UnimplementedLoginServiceServer) GreetFromLogin(context.Context, *Request)
 }
 func (UnimplementedLoginServiceServer) GreetFromLoginTest(context.Context, *Request) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GreetFromLoginTest not implemented")
+}
+func (UnimplementedLoginServiceServer) GetUser(context.Context, *RequestGetUser) (*ResponseGetUser, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
 }
 func (UnimplementedLoginServiceServer) CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
@@ -596,6 +610,24 @@ func _LoginService_GreetFromLoginTest_Handler(srv interface{}, ctx context.Conte
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(LoginServiceServer).GreetFromLoginTest(ctx, req.(*Request))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LoginService_GetUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RequestGetUser)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LoginServiceServer).GetUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/LoginService/GetUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LoginServiceServer).GetUser(ctx, req.(*RequestGetUser))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -686,6 +718,10 @@ var LoginService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GreetFromLoginTest",
 			Handler:    _LoginService_GreetFromLoginTest_Handler,
+		},
+		{
+			MethodName: "GetUser",
+			Handler:    _LoginService_GetUser_Handler,
 		},
 		{
 			MethodName: "CreateUser",
