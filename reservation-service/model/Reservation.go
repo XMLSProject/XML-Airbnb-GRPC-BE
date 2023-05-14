@@ -15,6 +15,7 @@ type Reservation struct {
 	Accommodation string             `bson:"accommodation,omitempty" json:"accommodation,omitempty"`
 	Accepted      string             `bson:"accepted,omitempty" json:"accepted,omitempty"`
 	Acception     string             `bson:"acception,omitempty" json:"acception,omitempty"`
+	GuestUsername string             `bson:"guestUsername,omitempty" json:"guestUsername,omitempty"`
 }
 
 func (Reservation *Reservation) BeforeCreate(*mongo.Client) error {

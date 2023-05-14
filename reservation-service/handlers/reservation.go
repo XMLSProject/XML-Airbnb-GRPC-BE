@@ -45,6 +45,16 @@ func userClaimFromToken(claims jwt.MapClaims) string {
 	return sub
 }
 
+func userClaimmFromToken(claims jwt.MapClaims) string {
+
+	sub, ok := claims["username"].(string)
+	if !ok {
+		return ""
+	}
+
+	return sub
+}
+
 func checkRole(ctx context.Context) string {
 	token, err := grpc_auth.AuthFromMD(ctx, "bearer")
 	if err != nil {
@@ -54,6 +64,19 @@ func checkRole(ctx context.Context) string {
 	tokenInfo, _ := parseToken(token)
 
 	role := userClaimFromToken(tokenInfo)
+
+	fmt.Println("role is: " + role)
+	return role
+}
+func checkUsername(ctx context.Context) string {
+	token, err := grpc_auth.AuthFromMD(ctx, "bearer")
+	if err != nil {
+		return ""
+	}
+
+	tokenInfo, _ := parseToken(token)
+
+	role := userClaimmFromToken(tokenInfo)
 
 	fmt.Println("role is: " + role)
 	return role
@@ -74,6 +97,8 @@ func (h ReservationHandler) Reserve(ctx context.Context, request *reservation.Re
 	if role == "User" {
 		fmt.Println(request)
 		var Reservation = model.Reservation{}
+		usr := checkUsername(ctx)
+		Reservation.GuestUsername = usr
 		Reservation.GuestNumber = int(request.GetReserve().GuestNumber)
 		if request.GetReserve().Acception == "automatic" {
 			Reservation.Accepted = "1"
