@@ -21,6 +21,8 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	ReservationService_GreetFromReservation_FullMethodName = "/ReservationService/GreetFromReservation"
 	ReservationService_Reserve_FullMethodName              = "/ReservationService/Reserve"
+	ReservationService_DeleteReservation_FullMethodName    = "/ReservationService/DeleteReservation"
+	ReservationService_AcceptReservation_FullMethodName    = "/ReservationService/AcceptReservation"
 )
 
 // ReservationServiceClient is the client API for ReservationService service.
@@ -61,7 +63,7 @@ func (c *reservationServiceClient) Reserve(ctx context.Context, in *RequestForRe
 
 func (c *reservationServiceClient) DeleteReservation(ctx context.Context, in *RequestDeleteReservation, opts ...grpc.CallOption) (*ResponseDeleteReservation, error) {
 	out := new(ResponseDeleteReservation)
-	err := c.cc.Invoke(ctx, "/ReservationService/DeleteReservation", in, out, opts...)
+	err := c.cc.Invoke(ctx, ReservationService_DeleteReservation_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +72,7 @@ func (c *reservationServiceClient) DeleteReservation(ctx context.Context, in *Re
 
 func (c *reservationServiceClient) AcceptReservation(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error) {
 	out := new(DeleteResponse)
-	err := c.cc.Invoke(ctx, "/ReservationService/AcceptReservation", in, out, opts...)
+	err := c.cc.Invoke(ctx, ReservationService_AcceptReservation_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +165,7 @@ func _ReservationService_DeleteReservation_Handler(srv interface{}, ctx context.
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ReservationService/DeleteReservation",
+		FullMethod: ReservationService_DeleteReservation_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ReservationServiceServer).DeleteReservation(ctx, req.(*RequestDeleteReservation))
@@ -181,7 +183,7 @@ func _ReservationService_AcceptReservation_Handler(srv interface{}, ctx context.
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ReservationService/AcceptReservation",
+		FullMethod: ReservationService_AcceptReservation_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ReservationServiceServer).AcceptReservation(ctx, req.(*DeleteRequest))

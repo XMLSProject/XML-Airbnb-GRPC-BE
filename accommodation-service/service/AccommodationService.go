@@ -62,3 +62,12 @@ func (service *AccommodationService) SearchAccommodations(location string, dateF
 
 	return accommodations, nil
 }
+
+func (service *AccommodationService) GetAllAccommodations() ([]model.Accommodation, error) {
+	accommodations, err := service.AccommodationRepo.GetAllAccommodations()
+	if err != nil {
+		return nil, fmt.Errorf("Failed to get accommodations: %v", err)
+	}
+
+	return accommodations, nil
+}

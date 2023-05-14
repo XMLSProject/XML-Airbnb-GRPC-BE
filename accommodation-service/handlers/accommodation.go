@@ -6,12 +6,13 @@ import (
 	"accomm_module/service"
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/dgrijalva/jwt-go"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"time"
 )
 
 func NewAccommodationHandler(service *service.AccommodationService) *AccommodationHandler {
@@ -201,6 +202,39 @@ func (h AccommodationHandler) SearchAccommodation(ctx context.Context, request *
 
 	response := &accommodation.SearchAccoResponse{
 		SearchInfo: searchInfo,
+	}
+
+	return response, nil
+}
+
+func (h AccommodationHandler) GetAllAccommodations(ctx context.Context, request *accommodation.AllAccommodationsRequest) (*accommodation.AllAccommodationsResponse, error) {
+	fmt.Println("USAO U HANDLERRRR")
+	accommodations, err := h.AccommodationService.GetAllAccommodations()
+	if err != nil {
+		fmt.Println("Error while retrieving all accommodations")
+		return nil, err
+	}
+
+	var allAccoInfo []*accommodation.AllAccoInfo
+	for _, acco := range accommodations {
+		accoInfo := &accommodation.AllAccoInfo{
+			Id:              acco.ID.Hex(),
+			Name:            acco.Name,
+			Location:        acco.Location,
+			Benefits:        acco.Benefits,
+			Photos:          acco.Photos,
+			MinGuests:       int32(acco.MinGuests),
+			MaxGuests:       int32(acco.MaxGuests),
+			AvailableFrom:   acco.AvailableFrom.String(),
+			AvailableTo:     acco.AvailableTo.String(),
+			Price:           acco.Price,
+			IsPricePerGuest: acco.IsPricePerGuest,
+		}
+		allAccoInfo = append(allAccoInfo, accoInfo)
+	}
+
+	response := &accommodation.AllAccommodationsResponse{
+		AllAcco: allAccoInfo,
 	}
 
 	return response, nil
