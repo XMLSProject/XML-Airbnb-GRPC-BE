@@ -56,6 +56,12 @@ service ReservationService {
       body: "checkInfo"
     };
   }
+  rpc GetAllReservations(AllReservationsRequest) returns (AllReservationsResponse){
+      option (google.api.http) = {
+        post: "/allReservations"
+        body:"nothing"
+      };
+   }
 }
 
 service LoginService {
@@ -69,6 +75,11 @@ service LoginService {
   rpc GreetFromLoginTest(Request) returns (Response) {
     option (google.api.http) = {
       get: "/login"
+    };
+  }
+  rpc GetUser(RequestGetUser) returns (ResponseGetUser) {
+    option (google.api.http) = {
+      get: "/getUser"
     };
   }
    rpc CreateUser(CreateUserRequest) returns (CreateUserResponse)
@@ -106,6 +117,21 @@ message RequestAccept {
 message ResponseAccept {
   string acce = 4;
 }
+message RequestGetUser {
+  string usr = 3;
+}
+message ResponseGetUser {
+  UserInfo usr = 4;
+}
+message UserInfo {
+        string id = 2;
+        string name = 3;
+        string surname = 4;
+        string username = 5;
+        string password = 6;
+        string email = 7;
+}
+
 message DeleteRequest {
   string dlt = 3;
 }
@@ -306,6 +332,22 @@ message AllAccommodationsRequest {
 
 message AllAccommodationsResponse {
   repeated AllAccoInfo allAcco = 1;
+}
+message AllReservationsRequest {
+  string nothing = 1;
+}
+
+message AllReservationsResponse {
+  repeated AllReservationInfo allAcco = 1;
+}
+message AllReservationInfo {
+  string id = 1;
+  string fromDate = 2;
+  string toDate = 3;
+  int32 guestNumber = 4;
+  string accommodation = 5;
+  string accepted = 6;
+  string acception = 7;
 }
 
 message AllAccoInfo {

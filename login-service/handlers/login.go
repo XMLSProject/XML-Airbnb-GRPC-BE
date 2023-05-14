@@ -6,13 +6,14 @@ import (
 	"first_init/proto/login"
 	"first_init/service"
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/dgrijalva/jwt-go"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"net/http"
-	"time"
 )
 
 func NewAuthenticationHandler(service *service.UserService) *LoginHandler {
@@ -56,6 +57,15 @@ func userClaimFromToken(claims jwt.MapClaims) string {
 
 	return sub
 }
+func userClaimmFromToken(claims jwt.MapClaims) string {
+
+	sub, ok := claims["username"].(string)
+	if !ok {
+		return ""
+	}
+
+	return sub
+}
 
 func checkRole(ctx context.Context) string {
 	token, err := grpc_auth.AuthFromMD(ctx, "bearer")
@@ -68,6 +78,19 @@ func checkRole(ctx context.Context) string {
 	role := userClaimFromToken(tokenInfo)
 
 	fmt.Println("role is: " + role)
+	return role
+}
+func checkUsername(ctx context.Context) string {
+	token, err := grpc_auth.AuthFromMD(ctx, "bearer")
+	if err != nil {
+		return ""
+	}
+
+	tokenInfo, _ := parseToken(token)
+
+	role := userClaimmFromToken(tokenInfo)
+
+	fmt.Println("username is: " + role)
 	return role
 }
 
@@ -130,6 +153,22 @@ func (h LoginHandler) DeleteUser(ctx context.Context, request *login.DeleteReque
 	return &login.DeleteResponse{
 		Dlt: "Deleted",
 	}, status.Errorf(codes.Unauthenticated, "You don't have permissions for this action")
+}
+func (h LoginHandler) GetUser(ctx context.Context, request *login.RequestGetUser) (*login.ResponseGetUser, error) {
+	usr := checkUsername(ctx)
+	Userr, _ := h.UserService.FindByUsername(usr)
+	fmt.Println("Iznad je request")
+	accoInfo := &login.UserInfo{
+		Id:       Userr.ID.Hex(),
+		Name:     Userr.Name,
+		Surname:  Userr.Surname,
+		Username: Userr.Username,
+		Password: Userr.Password,
+		Email:    Userr.Email,
+	}
+	return &login.ResponseGetUser{
+		Usr: accoInfo,
+	}, nil
 }
 
 func (h LoginHandler) Login(ctx context.Context, request *login.LoginRequest) (*login.LoginResponse, error) {

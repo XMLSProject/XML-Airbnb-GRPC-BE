@@ -22,6 +22,15 @@ func (service *UserService) FindUser(id string) (*model.User, error) {
 	}
 	return &User, nil
 }
+func (service *UserService) FindByUsername(id string) (*model.User, error) {
+	fmt.Println("Uso u servis")
+	User, err := service.UserRepo.FindByUsername(id)
+	fmt.Println("Proso servis")
+	if err != nil {
+		return nil, fmt.Errorf(fmt.Sprintf("user with id %s not found", id))
+	}
+	return &User, nil
+}
 func (service *UserService) FindUserForLogin(username string, password string) (*model.User, error) {
 	var User *model.User
 	User, err := service.UserRepo.FindUser(username, password)

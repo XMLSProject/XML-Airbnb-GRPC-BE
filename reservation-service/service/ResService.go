@@ -47,6 +47,15 @@ func (service *ResService) GetAllAccommodationsByCreator(creator string) (bool, 
 	return accommodations, nil
 }
 
+func (service *ResService) GetAllReservationsByAcc(id string) ([]model.Reservation, error) {
+	accommodations, err := service.ResRepo.GetAllReservationsByAcc(id)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to get accommodations: %v", err)
+	}
+
+	return accommodations, nil
+}
+
 func (service *ResService) CheckReservationsByDates(accoId string, dateFrom time.Time, dateTo time.Time) (bool, error) {
 	accommodations, err := service.ResRepo.CheckReservationsByDates(accoId, dateFrom, dateTo)
 	if err != nil {

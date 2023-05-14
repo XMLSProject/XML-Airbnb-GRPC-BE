@@ -150,6 +150,31 @@ func (h ReservationHandler) CheckReservations(ctx context.Context, request *rese
 	}, nil
 }
 
+func (h ReservationHandler) GetAllReservations(ctx context.Context, request *reservation.AllReservationsRequest) (*reservation.AllReservationsResponse, error) {
+	fmt.Println(request.Nothing)
+	checker, _ := h.ResService.GetAllReservationsByAcc(request.Nothing)
+	fmt.Println(len(checker))
+	var allAccoInfo []*reservation.AllReservationInfo
+	for _, acco := range checker {
+		accoInfo := &reservation.AllReservationInfo{
+			Id:            acco.ID.Hex(),
+			FromDate:      acco.FromDate.String(),
+			ToDate:        acco.ToDate.String(),
+			GuestNumber:   int32(acco.GuestNumber),
+			Accommodation: acco.Accommodation,
+			Accepted:      acco.Accepted,
+			Acception:     acco.Acception,
+		}
+		allAccoInfo = append(allAccoInfo, accoInfo)
+	}
+
+	response := &reservation.AllReservationsResponse{
+		AllAcco: allAccoInfo,
+	}
+
+	return response, nil
+}
+
 func (h ReservationHandler) CheckReservationsByDates(ctx context.Context, request *reservation.CheckRequest) (*reservation.CheckResponse, error) {
 	var accoId = request.GetCheckInfo().AccoId
 	var dateFrom = request.GetCheckInfo().DateFrom

@@ -181,3 +181,19 @@ func (repo *ResRepository) CheckReservationsByDatesUpdate(id string) bool {
 
 	return true
 }
+func (repo *ResRepository) GetAllReservationsByAcc(accomm string) ([]model.Reservation, error) {
+	fmt.Println(accomm)
+	cursor, err := repo.DatabaseConnection.Database("ReservationDB").Collection("reservations").Find(context.Background(), bson.M{"accommodation": accomm})
+	if err != nil {
+		return nil, fmt.Errorf("Failed to get accommodations: %v", err)
+	}
+	defer cursor.Close(context.Background())
+
+	var accommodations []model.Reservation
+	if err := cursor.All(context.Background(), &accommodations); err != nil {
+		return nil, fmt.Errorf("Failed to decode accommodations: %v", err)
+	}
+	fmt.Println(len(accommodations))
+
+	return accommodations, nil
+}

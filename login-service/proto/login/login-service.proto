@@ -9,6 +9,7 @@ service LoginService {
   rpc Login(LoginRequest) returns (LoginResponse){}
   rpc UpdateUser(UpdateRequest) returns (UpdateResponse){}
   rpc DeleteUser(DeleteRequest) returns (DeleteResponse){}
+  rpc GetUser(RequestGetUser) returns (ResponseGetUser) {}
 }
 
 message DeleteRequest {
@@ -31,6 +32,20 @@ message UpdateInfo {
         string username = 4;
         string password = 5;
         string email = 6;
+}
+message RequestGetUser {
+  string usr = 3;
+}
+message ResponseGetUser {
+  UserInfo usr = 4;
+}
+message UserInfo {
+        string id = 2;
+        string name = 3;
+        string surname = 4;
+        string username = 5;
+        string password = 6;
+        string email = 7;
 }
 
 message LoginRequest {
