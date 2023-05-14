@@ -44,6 +44,12 @@ service ReservationService {
       body: "delres"
     };
   }
+  rpc CheckForGuests(Request) returns (Response) {
+    option (google.api.http) = {
+      post: "/checkForGuests"
+      body: "name"
+    };
+  }
   rpc AcceptReservation(DeleteRequest) returns (DeleteResponse) {
     option (google.api.http) = {
       post: "/acceptReservation"

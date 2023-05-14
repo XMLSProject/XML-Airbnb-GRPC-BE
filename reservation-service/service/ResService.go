@@ -64,6 +64,14 @@ func (service *ResService) CheckReservationsByDates(accoId string, dateFrom time
 
 	return accommodations, nil
 }
+func (service *ResService) CheckReservationForUser(username string) (bool, error) {
+	accommodations, err := service.ResRepo.CheckReservationForUser(username)
+	if err != nil {
+		return true, fmt.Errorf("Failed to get accommodations: %v", err)
+	}
+
+	return accommodations, nil
+}
 
 func (service *ResService) FindOne(creator string) (*model.Reservation, error) {
 	accommodations, err := service.ResRepo.FindOne(creator)
