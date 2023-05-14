@@ -52,6 +52,7 @@ func (repo *ResRepository) AcceptReservation(id string) error {
 	if err != nil {
 		return err
 	}
+	repo.CheckReservationsByDatesUpdate(id)
 
 	fmt.Println("Successfully updated")
 	return nil
@@ -156,4 +157,27 @@ func (repo *ResRepository) CheckReservationsByDates(accoId string, dateFrom time
 		}
 	}
 	return result, nil
+}
+func (repo *ResRepository) CheckReservationsByDatesUpdate(id string) bool {
+	res, _ := repo.FindOne(id)
+	cursor, err := repo.DatabaseConnection.Database("ReservationDB").Collection("reservations").Find(context.Background(), bson.D{})
+	if err != nil {
+		return true
+	}
+	defer cursor.Close(context.Background())
+
+	var accommodations []model.Reservation
+	if err := cursor.All(context.Background(), &accommodations); err != nil {
+		return true
+	}
+	for _, accommodation := range accommodations {
+		// Perform the desired operation with each accommodation
+		if (accommodation.FromDate.Before(res.FromDate) && accommodation.ToDate.After(res.FromDate)) || (accommodation.FromDate.Before(res.ToDate) && accommodation.ToDate.After(res.ToDate)) || (accommodation.FromDate.After(res.FromDate) && accommodation.FromDate.Before(res.ToDate)) || (accommodation.ToDate.After(res.FromDate) && accommodation.ToDate.Before(res.ToDate)) {
+
+			repo.DeleteReservation(res.ID.Hex())
+			fmt.Println("obriso")
+		}
+	}
+
+	return true
 }
