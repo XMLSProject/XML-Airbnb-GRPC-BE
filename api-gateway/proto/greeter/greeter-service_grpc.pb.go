@@ -645,6 +645,7 @@ type AccommodationServiceClient interface {
 	EditAccommodation(ctx context.Context, in *EditAccoRequest, opts ...grpc.CallOption) (*EditAccoResponse, error)
 	SearchAccommodation(ctx context.Context, in *SearchAccoRequest, opts ...grpc.CallOption) (*SearchAccoResponse, error)
 	GetAllAccommodations(ctx context.Context, in *AllAccommodationsRequest, opts ...grpc.CallOption) (*AllAccommodationsResponse, error)
+	CheckAcceptionType(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
 	GetAllAccommodationsByCreator(ctx context.Context, in *AllAccommodationsRequest, opts ...grpc.CallOption) (*AllAccommodationsResponse, error)
 }
 
@@ -701,6 +702,15 @@ func (c *accommodationServiceClient) GetAllAccommodations(ctx context.Context, i
 	return out, nil
 }
 
+func (c *accommodationServiceClient) CheckAcceptionType(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := c.cc.Invoke(ctx, "/AccommodationService/CheckAcceptionType", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *accommodationServiceClient) GetAllAccommodationsByCreator(ctx context.Context, in *AllAccommodationsRequest, opts ...grpc.CallOption) (*AllAccommodationsResponse, error) {
 	out := new(AllAccommodationsResponse)
 	err := c.cc.Invoke(ctx, "/AccommodationService/GetAllAccommodationsByCreator", in, out, opts...)
@@ -719,6 +729,7 @@ type AccommodationServiceServer interface {
 	EditAccommodation(context.Context, *EditAccoRequest) (*EditAccoResponse, error)
 	SearchAccommodation(context.Context, *SearchAccoRequest) (*SearchAccoResponse, error)
 	GetAllAccommodations(context.Context, *AllAccommodationsRequest) (*AllAccommodationsResponse, error)
+	CheckAcceptionType(context.Context, *Request) (*Response, error)
 	GetAllAccommodationsByCreator(context.Context, *AllAccommodationsRequest) (*AllAccommodationsResponse, error)
 	mustEmbedUnimplementedAccommodationServiceServer()
 }
@@ -741,6 +752,9 @@ func (UnimplementedAccommodationServiceServer) SearchAccommodation(context.Conte
 }
 func (UnimplementedAccommodationServiceServer) GetAllAccommodations(context.Context, *AllAccommodationsRequest) (*AllAccommodationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllAccommodations not implemented")
+}
+func (UnimplementedAccommodationServiceServer) CheckAcceptionType(context.Context, *Request) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckAcceptionType not implemented")
 }
 func (UnimplementedAccommodationServiceServer) GetAllAccommodationsByCreator(context.Context, *AllAccommodationsRequest) (*AllAccommodationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllAccommodationsByCreator not implemented")
@@ -848,6 +862,24 @@ func _AccommodationService_GetAllAccommodations_Handler(srv interface{}, ctx con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AccommodationService_CheckAcceptionType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Request)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccommodationServiceServer).CheckAcceptionType(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/AccommodationService/CheckAcceptionType",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccommodationServiceServer).CheckAcceptionType(ctx, req.(*Request))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AccommodationService_GetAllAccommodationsByCreator_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AllAccommodationsRequest)
 	if err := dec(in); err != nil {
@@ -892,6 +924,10 @@ var AccommodationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAllAccommodations",
 			Handler:    _AccommodationService_GetAllAccommodations_Handler,
+		},
+		{
+			MethodName: "CheckAcceptionType",
+			Handler:    _AccommodationService_CheckAcceptionType_Handler,
 		},
 		{
 			MethodName: "GetAllAccommodationsByCreator",

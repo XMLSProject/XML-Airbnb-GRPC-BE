@@ -8,7 +8,7 @@ import (
 )
 
 type Accommodation struct {
-	ID              primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	ID              primitive.ObjectID `bson:"_id,omitempty" json:"_id"`
 	Name            string             `bson:"name,omitempty" json:"name,omitempty"`
 	Location        string             `bson:"location,omitempty" json:"location,omitempty"`
 	Benefits        string             `bson:"benefits,omitempty" json:"benefits,omitempty"`

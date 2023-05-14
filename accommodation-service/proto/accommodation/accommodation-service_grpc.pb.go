@@ -28,6 +28,7 @@ type AccommodationServiceClient interface {
 	SearchAccommodation(ctx context.Context, in *SearchAccoRequest, opts ...grpc.CallOption) (*SearchAccoResponse, error)
 	GetAllAccommodations(ctx context.Context, in *AllAccommodationsRequest, opts ...grpc.CallOption) (*AllAccommodationsResponse, error)
 	GetAllAccommodationsByCreator(ctx context.Context, in *AllAccommodationsRequest, opts ...grpc.CallOption) (*AllAccommodationsResponse, error)
+	CheckAcceptionType(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
 }
 
 type accommodationServiceClient struct {
@@ -92,6 +93,15 @@ func (c *accommodationServiceClient) GetAllAccommodationsByCreator(ctx context.C
 	return out, nil
 }
 
+func (c *accommodationServiceClient) CheckAcceptionType(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := c.cc.Invoke(ctx, "/AccommodationService/CheckAcceptionType", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AccommodationServiceServer is the server API for AccommodationService service.
 // All implementations must embed UnimplementedAccommodationServiceServer
 // for forward compatibility
@@ -102,6 +112,7 @@ type AccommodationServiceServer interface {
 	SearchAccommodation(context.Context, *SearchAccoRequest) (*SearchAccoResponse, error)
 	GetAllAccommodations(context.Context, *AllAccommodationsRequest) (*AllAccommodationsResponse, error)
 	GetAllAccommodationsByCreator(context.Context, *AllAccommodationsRequest) (*AllAccommodationsResponse, error)
+	CheckAcceptionType(context.Context, *Request) (*Response, error)
 	mustEmbedUnimplementedAccommodationServiceServer()
 }
 
@@ -126,6 +137,9 @@ func (UnimplementedAccommodationServiceServer) GetAllAccommodations(context.Cont
 }
 func (UnimplementedAccommodationServiceServer) GetAllAccommodationsByCreator(context.Context, *AllAccommodationsRequest) (*AllAccommodationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllAccommodationsByCreator not implemented")
+}
+func (UnimplementedAccommodationServiceServer) CheckAcceptionType(context.Context, *Request) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckAcceptionType not implemented")
 }
 func (UnimplementedAccommodationServiceServer) mustEmbedUnimplementedAccommodationServiceServer() {}
 
@@ -248,6 +262,24 @@ func _AccommodationService_GetAllAccommodationsByCreator_Handler(srv interface{}
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AccommodationService_CheckAcceptionType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Request)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccommodationServiceServer).CheckAcceptionType(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/AccommodationService/CheckAcceptionType",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccommodationServiceServer).CheckAcceptionType(ctx, req.(*Request))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AccommodationService_ServiceDesc is the grpc.ServiceDesc for AccommodationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -278,6 +310,10 @@ var AccommodationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAllAccommodationsByCreator",
 			Handler:    _AccommodationService_GetAllAccommodationsByCreator_Handler,
+		},
+		{
+			MethodName: "CheckAcceptionType",
+			Handler:    _AccommodationService_CheckAcceptionType_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

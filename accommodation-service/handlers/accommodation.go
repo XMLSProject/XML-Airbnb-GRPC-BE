@@ -79,6 +79,19 @@ func (h AccommodationHandler) GreetFromAccommodation(ctx context.Context, reques
 	}, nil
 }
 
+func (h AccommodationHandler) CheckAcceptionType(ctx context.Context, request *accommodation.Request) (*accommodation.Response, error) {
+
+	ret, err := h.AccommodationService.CheckOne(request.Name)
+	if err != nil {
+		return &accommodation.Response{
+			Greeting: fmt.Sprintf(ret),
+		}, err
+	}
+	return &accommodation.Response{
+		Greeting: fmt.Sprintf(ret),
+	}, nil
+}
+
 func (h AccommodationHandler) CreateAccommodation(ctx context.Context, request *accommodation.CreateAccommodationRequest) (*accommodation.CreateAccommodationResponse, error) {
 	role := checkRole(ctx)
 	if role == "Host" {

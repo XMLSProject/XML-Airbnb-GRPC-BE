@@ -201,6 +201,12 @@ service AccommodationService {
         get: "/allAcco"
       };
    }
+   rpc CheckAcceptionType(Request) returns (Response) {
+    option (google.api.http) = {
+        post: "/checkType"
+        body: "name"
+      };
+   }
     rpc GetAllAccommodationsByCreator(AllAccommodationsRequest) returns (AllAccommodationsResponse)
    {
       option (google.api.http) = {

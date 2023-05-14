@@ -80,3 +80,8 @@ func (service *AccommodationService) GetAllAccommodationsByCreator(creator strin
 
 	return accommodations, nil
 }
+func (repo *AccommodationService) CheckOne(id string) (string, error) {
+	ret, err := repo.AccommodationRepo.CheckHere(id)
+	fmt.Println("Proso interakcije s bazom")
+	return ret, err
+}
