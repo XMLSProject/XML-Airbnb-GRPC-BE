@@ -7,6 +7,7 @@ service ReservationService {
   rpc Reserve(RequestForReserve) returns (ResponseForReserve) {}
   rpc DeleteReservation(RequestDeleteReservation) returns (ResponseDeleteReservation) {}
   rpc AcceptReservation(DeleteRequest) returns (DeleteResponse) {}
+  rpc CheckReservations(Request) returns (Response) {}
 
 }
 message DeleteRequest {

@@ -37,3 +37,11 @@ func (service *ResService) AcceptReservation(id string) error {
 	fmt.Println("Successfully updated")
 	return nil
 }
+func (service *ResService) GetAllAccommodationsByCreator(creator string) (bool, error) {
+	accommodations, err := service.ResRepo.GetAllReservationsByAccommodation(creator)
+	if err != nil {
+		return true, fmt.Errorf("Failed to get accommodations: %v", err)
+	}
+
+	return accommodations, nil
+}

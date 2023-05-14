@@ -26,6 +26,12 @@ service ReservationService {
       body: "*"
     };
   }
+  rpc CheckReservations(Request) returns (Response) {
+    option (google.api.http) = {
+      post: "/checkReservation"
+      body: "name"
+    };
+  }
   rpc Reserve(RequestForReserve) returns (ResponseForReserve) {
     option (google.api.http) = {
       post: "/makeReservation"
@@ -193,6 +199,13 @@ service AccommodationService {
    {
       option (google.api.http) = {
         get: "/allAcco"
+      };
+   }
+    rpc GetAllAccommodationsByCreator(AllAccommodationsRequest) returns (AllAccommodationsResponse)
+   {
+      option (google.api.http) = {
+         post: "/allByCreator"
+          body: "nothing"
       };
    }
 }

@@ -3,10 +3,12 @@ package repo
 import (
 	"context"
 	"fmt"
+	"res_init/model"
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"res_init/model"
 )
 
 type ResRepository struct {
@@ -54,4 +56,30 @@ func (repo *ResRepository) AcceptReservation(id string) error {
 
 	fmt.Println("Successfully updated")
 	return nil
+}
+
+func (repo *ResRepository) GetAllReservationsByAccommodation(accoId string) (bool, error) {
+	cursor, err := repo.DatabaseConnection.Database("ReservationDB").Collection("reservations").Find(context.Background(), bson.M{"accommodation": accoId})
+	if err != nil {
+		return true, fmt.Errorf("failed to get reservations: %v", err)
+	}
+	defer cursor.Close(context.Background())
+
+	var reservations []model.Reservation
+	if err := cursor.All(context.Background(), &reservations); err != nil {
+		return true, fmt.Errorf("failed to decode reservations: %v", err)
+	}
+	for _, reservation := range reservations {
+		// Access individual reservation properties using the dot notation
+		if reservation.Accepted == "1" {
+			fmt.Println(reservation.ToDate.Date())
+			if time.Now().After(reservation.ToDate) {
+				return true, nil
+			}
+			return false, nil
+		}
+
+	}
+
+	return true, nil
 }

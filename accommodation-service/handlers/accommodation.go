@@ -239,3 +239,47 @@ func (h AccommodationHandler) GetAllAccommodations(ctx context.Context, request 
 
 	return response, nil
 }
+
+func (h AccommodationHandler) GetAllAccommodationsByCreator(ctx context.Context, request *accommodation.AllAccommodationsRequest) (*accommodation.AllAccommodationsResponse, error) {
+	fmt.Println("USAO U HANDLERRRR")
+	token, err := grpc_auth.AuthFromMD(ctx, "bearer")
+	if err != nil {
+		return nil, err
+	}
+
+	tokenInfo, _ := parseToken(token)
+
+	username := userClaimFromToken(tokenInfo)
+
+	fmt.Println("User id: " + username)
+
+	accommodations, err := h.AccommodationService.GetAllAccommodationsByCreator(username)
+	if err != nil {
+		fmt.Println("Error while retrieving all accommodations")
+		return nil, err
+	}
+
+	var allAccoInfo []*accommodation.AllAccoInfo
+	for _, acco := range accommodations {
+		accoInfo := &accommodation.AllAccoInfo{
+			Id:              acco.ID.Hex(),
+			Name:            acco.Name,
+			Location:        acco.Location,
+			Benefits:        acco.Benefits,
+			Photos:          acco.Photos,
+			MinGuests:       int32(acco.MinGuests),
+			MaxGuests:       int32(acco.MaxGuests),
+			AvailableFrom:   acco.AvailableFrom.String(),
+			AvailableTo:     acco.AvailableTo.String(),
+			Price:           acco.Price,
+			IsPricePerGuest: acco.IsPricePerGuest,
+		}
+		allAccoInfo = append(allAccoInfo, accoInfo)
+	}
+
+	response := &accommodation.AllAccommodationsResponse{
+		AllAcco: allAccoInfo,
+	}
+
+	return response, nil
+}
