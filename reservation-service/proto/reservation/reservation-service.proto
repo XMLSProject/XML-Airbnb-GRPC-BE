@@ -8,6 +8,7 @@ service ReservationService {
   rpc DeleteReservation(RequestDeleteReservation) returns (ResponseDeleteReservation) {}
   rpc AcceptReservation(DeleteRequest) returns (DeleteResponse) {}
   rpc CheckReservations(Request) returns (Response) {}
+  rpc CheckReservationsByDates(CheckRequest) returns (CheckResponse) {}
 
 }
 message DeleteRequest {
@@ -51,4 +52,18 @@ message ReserveInfo {
         string accommodation = 5;
         string accepted = 6;
         string acception = 7;
+}
+
+message CheckRequest {
+  CheckReqInfo checkInfo = 1;
+}
+
+message CheckResponse {
+  bool checkRes = 1;
+}
+
+message CheckReqInfo {
+  string accoId = 1;
+  string dateFrom = 2;
+  string dateTo = 3;
 }

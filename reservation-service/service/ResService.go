@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"res_init/model"
 	repo "res_init/repository"
+	"time"
 )
 
 type ResService struct {
@@ -39,6 +40,15 @@ func (service *ResService) AcceptReservation(id string) error {
 }
 func (service *ResService) GetAllAccommodationsByCreator(creator string) (bool, error) {
 	accommodations, err := service.ResRepo.GetAllReservationsByAccommodation(creator)
+	if err != nil {
+		return true, fmt.Errorf("Failed to get accommodations: %v", err)
+	}
+
+	return accommodations, nil
+}
+
+func (service *ResService) CheckReservationsByDates(accoId string, dateFrom time.Time, dateTo time.Time) (bool, error) {
+	accommodations, err := service.ResRepo.CheckReservationsByDates(accoId, dateFrom, dateTo)
 	if err != nil {
 		return true, fmt.Errorf("Failed to get accommodations: %v", err)
 	}

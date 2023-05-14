@@ -50,6 +50,12 @@ service ReservationService {
       body: "dlt"
     };
   }
+  rpc CheckReservationsByDates(CheckRequest) returns (CheckResponse) {
+    option (google.api.http) = {
+      post: "/checkDates"
+      body: "checkInfo"
+    };
+  }
 }
 
 service LoginService {
@@ -309,5 +315,19 @@ message AllAccoInfo {
   string availableTo = 9;
   float price = 10;
   bool isPricePerGuest = 11;
+}
+
+message CheckRequest {
+  CheckReqInfo checkInfo = 1;
+}
+
+message CheckResponse {
+  bool checkRes = 1;
+}
+
+message CheckReqInfo {
+  string accoId = 1;
+  string dateFrom = 2;
+  string dateTo = 3;
 }
 
