@@ -11,6 +11,7 @@ import (
 	"example/gateway/config"
 	"example/gateway/proto/greeter"
 
+	gorillaHandlers "github.com/gorilla/handlers"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -109,9 +110,15 @@ func main() {
 		log.Fatalln("Failed to register gateway:", err)
 	}
 
+	headersOk := gorillaHandlers.AllowedHeaders([]string{"Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization",
+		"accept", "origin", "Cache-Control", "X-Requested-With"})
+	originsOk := gorillaHandlers.AllowedOrigins([]string{"*"})
+	methodsOk := gorillaHandlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+	cors := gorillaHandlers.CORS(headersOk, originsOk, methodsOk)
+
 	gwServer := &http.Server{
 		Addr:    cfg.Address,
-		Handler: gwmux,
+		Handler: cors(gwmux),
 	}
 
 	go func() {
