@@ -6,12 +6,13 @@ import (
 	"accomm_module/service"
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/dgrijalva/jwt-go"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"time"
 )
 
 func NewAccommodationHandler(service *service.AccommodationService) *AccommodationHandler {
@@ -163,4 +164,78 @@ func (h AccommodationHandler) EditAccommodation(ctx context.Context, request *ac
 	return &accommodation.EditAccoResponse{
 		Reg: &accommodation.EditAccoInfo{},
 	}, status.Errorf(codes.Unauthenticated, "You don't have permissions for this action")
+}
+
+func (h AccommodationHandler) SearchAccommodation(ctx context.Context, request *accommodation.SearchAccoRequest) (*accommodation.SearchAccoResponse, error) {
+	var location = request.GetSearchReqInfo().Location
+	var dateFrom = request.GetSearchReqInfo().DateFrom
+	var dateTo = request.GetSearchReqInfo().DateTo
+	var guestNumber = request.GetSearchReqInfo().GuestNumber
+
+	layout := "2006-01-02T15:04:05Z"
+	dateFromDate, _ := time.Parse(layout, dateFrom)
+	dateToDate, _ := time.Parse(layout, dateTo)
+
+	accommodations, err := h.AccommodationService.SearchAccommodations(location, dateFromDate, dateToDate, int(guestNumber))
+	if err != nil {
+		fmt.Println("Error while searching accommodations")
+		return nil, err
+	}
+
+	var searchInfo []*accommodation.SearchAccoInfo
+	for _, acco := range accommodations {
+		searchInfo = append(searchInfo, &accommodation.SearchAccoInfo{
+			Id:              acco.ID.Hex(),
+			Name:            acco.Name,
+			Location:        acco.Location,
+			Benefits:        acco.Benefits,
+			Photos:          acco.Photos,
+			MinGuests:       int32(acco.MinGuests),
+			MaxGuests:       int32(acco.MaxGuests),
+			AvailableFrom:   acco.AvailableFrom.Format(layout),
+			AvailableTo:     acco.AvailableTo.Format(layout),
+			Price:           acco.Price,
+			IsPricePerGuest: acco.IsPricePerGuest,
+			TotalPrice:      acco.TotalPrice,
+		})
+	}
+
+	response := &accommodation.SearchAccoResponse{
+		SearchInfo: searchInfo,
+	}
+
+	return response, nil
+}
+
+func (h AccommodationHandler) GetAllAccommodations(ctx context.Context, request *accommodation.AllAccommodationsRequest) (*accommodation.AllAccommodationsResponse, error) {
+	fmt.Println("USAO U HANDLERRRR")
+	accommodations, err := h.AccommodationService.GetAllAccommodations()
+	if err != nil {
+		fmt.Println("Error while retrieving all accommodations")
+		return nil, err
+	}
+
+	var allAccoInfo []*accommodation.AllAccoInfo
+	for _, acco := range accommodations {
+		accoInfo := &accommodation.AllAccoInfo{
+			Id:              acco.ID.Hex(),
+			Name:            acco.Name,
+			Location:        acco.Location,
+			Benefits:        acco.Benefits,
+			Photos:          acco.Photos,
+			MinGuests:       int32(acco.MinGuests),
+			MaxGuests:       int32(acco.MaxGuests),
+			AvailableFrom:   acco.AvailableFrom.String(),
+			AvailableTo:     acco.AvailableTo.String(),
+			Price:           acco.Price,
+			IsPricePerGuest: acco.IsPricePerGuest,
+		}
+		allAccoInfo = append(allAccoInfo, accoInfo)
+	}
+
+	response := &accommodation.AllAccommodationsResponse{
+		AllAcco: allAccoInfo,
+	}
+
+	return response, nil
 }

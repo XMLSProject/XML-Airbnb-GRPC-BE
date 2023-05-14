@@ -6,6 +6,8 @@ service AccommodationService {
   rpc GreetFromAccommodation(Request) returns (Response) {}
   rpc CreateAccommodation(CreateAccommodationRequest) returns (CreateAccommodationResponse) {}
   rpc EditAccommodation(EditAccoRequest) returns (EditAccoResponse){}
+  rpc SearchAccommodation(SearchAccoRequest) returns (SearchAccoResponse) {}
+  rpc GetAllAccommodations(AllAccommodationsRequest) returns (AllAccommodationsResponse) {}
 }
 
 message Request {
@@ -47,4 +49,56 @@ message EditAccoInfo {
   string availableTo = 3;
   float price = 4;
   bool isPricePerGuest = 5;
+}
+
+message SearchAccoRequest {
+  SearchAccoReqInfo searchReqInfo = 1;
+}
+
+message SearchAccoReqInfo {
+  string location = 1;
+  string dateFrom = 2;
+  string dateTo = 3;
+  int32 guestNumber = 4;
+}
+
+message SearchAccoResponse {
+  repeated SearchAccoInfo searchInfo = 1;
+}
+
+message SearchAccoInfo {
+  string id = 1;
+  string name = 2;
+  string location = 3;
+  string benefits = 4;
+  repeated string photos = 5;
+  int32 minGuests = 6;
+  int32 maxGuests = 7;
+  string availableFrom = 8;
+  string availableTo = 9;
+  float price = 10;
+  bool isPricePerGuest = 11;
+  float totalPrice = 12;
+}
+
+message AllAccommodationsRequest {
+  string nothing = 1;
+}
+
+message AllAccommodationsResponse {
+  repeated AllAccoInfo allAcco = 1;
+}
+
+message AllAccoInfo {
+  string id = 1;
+  string name = 2;
+  string location = 3;
+  string benefits = 4;
+  repeated string photos = 5;
+  int32 minGuests = 6;
+  int32 maxGuests = 7;
+  string availableFrom = 8;
+  string availableTo = 9;
+  float price = 10;
+  bool isPricePerGuest = 11;
 }
