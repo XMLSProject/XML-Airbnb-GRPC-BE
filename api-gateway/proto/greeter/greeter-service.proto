@@ -56,6 +56,12 @@ service ReservationService {
       body: "checkInfo"
     };
   }
+  rpc GetAllReservations(AllReservationsRequest) returns (AllReservationsResponse){
+      option (google.api.http) = {
+        post: "/allReservations"
+        body:"nothing"
+      };
+   }
 }
 
 service LoginService {
@@ -306,6 +312,22 @@ message AllAccommodationsRequest {
 
 message AllAccommodationsResponse {
   repeated AllAccoInfo allAcco = 1;
+}
+message AllReservationsRequest {
+  string nothing = 1;
+}
+
+message AllReservationsResponse {
+  repeated AllReservationInfo allAcco = 1;
+}
+message AllReservationInfo {
+  string id = 1;
+  string fromDate = 2;
+  string toDate = 3;
+  int32 guestNumber = 4;
+  string accommodation = 5;
+  string accepted = 6;
+  string acception = 7;
 }
 
 message AllAccoInfo {

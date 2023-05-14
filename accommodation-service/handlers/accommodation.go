@@ -223,6 +223,8 @@ func (h AccommodationHandler) SearchAccommodation(ctx context.Context, request *
 
 func (h AccommodationHandler) GetAllAccommodations(ctx context.Context, request *accommodation.AllAccommodationsRequest) (*accommodation.AllAccommodationsResponse, error) {
 	fmt.Println("USAO U HANDLERRRR")
+	role := checkRole(ctx)
+	fmt.Println(role)
 	accommodations, err := h.AccommodationService.GetAllAccommodations()
 	if err != nil {
 		fmt.Println("Error while retrieving all accommodations")
