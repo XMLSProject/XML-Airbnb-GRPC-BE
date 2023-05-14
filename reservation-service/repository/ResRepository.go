@@ -17,7 +17,6 @@ type ResRepository struct {
 
 func (repo *ResRepository) CreateReservation(Reservation *model.Reservation) error {
 	Reservation.BeforeCreate(repo.DatabaseConnection)
-	Reservation.Accepted = "0"
 	_, err := repo.DatabaseConnection.Database("ReservationDB").Collection("reservations").InsertOne(context.TODO(), &Reservation)
 	if err != nil {
 		return err

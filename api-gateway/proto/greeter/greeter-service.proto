@@ -124,6 +124,7 @@ message ReserveInfo {
         int32 guestNumber = 4;
         string accommodation = 5;
         string accepted = 6;
+        string acception = 7;
 }
 message UpdateRequest {
   UpdateInfo upd = 3;

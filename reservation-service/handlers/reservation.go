@@ -75,7 +75,12 @@ func (h ReservationHandler) Reserve(ctx context.Context, request *reservation.Re
 		fmt.Println(request)
 		var Reservation = model.Reservation{}
 		Reservation.GuestNumber = int(request.GetReserve().GuestNumber)
-		Reservation.Accepted = "0"
+		if request.GetReserve().Acception == "automatic" {
+			Reservation.Accepted = "1"
+		}
+		if request.GetReserve().Acception == "handle" {
+			Reservation.Accepted = "0"
+		}
 		Reservation.Accommodation = request.GetReserve().Accommodation
 		layout := "2006-01-02T15:04:05Z"
 		Reservation.FromDate, _ = time.Parse(layout, request.GetReserve().FromDate)
