@@ -201,6 +201,7 @@ func (h ReservationHandler) GetAllReservations(ctx context.Context, request *res
 			Accommodation: acco.Accommodation,
 			Accepted:      acco.Accepted,
 			Acception:     acco.Acception,
+			GuestUsername: acco.GuestUsername,
 		}
 		allAccoInfo = append(allAccoInfo, accoInfo)
 	}

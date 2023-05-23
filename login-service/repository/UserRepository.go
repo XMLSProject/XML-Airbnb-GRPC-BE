@@ -68,7 +68,7 @@ func (repo *UserRepository) CreateUser(User *model.User) error {
 func (repo *UserRepository) UpdateUser(user *model.User) error {
 	_, err := repo.DatabaseConnection.Database("UserDB").Collection("users").UpdateOne(
 		context.TODO(),
-		bson.M{"_id": user.ID},
+		bson.M{"id": user.ID},
 		bson.D{{Key: "$set", Value: bson.D{
 			{Key: "name", Value: user.Name},
 			{Key: "surname", Value: user.Surname},

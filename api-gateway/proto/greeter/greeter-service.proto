@@ -354,6 +354,7 @@ message AllReservationInfo {
   string accommodation = 5;
   string accepted = 6;
   string acception = 7;
+  string guestUsername = 8;
 }
 
 message AllAccoInfo {
